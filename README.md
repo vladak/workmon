@@ -56,8 +56,6 @@ cat /dev/ttyAMA0
 
 ## Install
 
-based on http://lechacal.com/wiki/index.php?title=RPICT3V1
-
 - pre-requisites:
 ```
 sudo apt-get install -y python3-venv
@@ -75,3 +73,8 @@ python3 -m venv env
 export CFLAGS=-fcommon
 pip install -r requirements.txt
 ```
+
+## Guides:
+
+- RPICT3V1: http://lechacal.com/wiki/index.php?title=RPICT3V1
+- US-100: https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/python-circuitpython
