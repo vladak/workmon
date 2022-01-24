@@ -53,3 +53,18 @@ sudo reboot
 stty -echo -F /dev/ttyAMA0 raw speed 38400
 cat /dev/ttyAMA0
 ```
+
+## Install
+
+based on http://lechacal.com/wiki/index.php?title=RPICT3V1
+
+- pre-requisites:
+```
+sudo apt-get install -y python3-venv
+```
+- install:
+```
+python3 -m venv env
+. ./env/bin/activate
+ pip install -r requirements.txt
+```
