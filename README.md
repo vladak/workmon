@@ -33,6 +33,8 @@ My goal is to provide the following functionality:
 
 ## Setup
 
+based on http://lechacal.com/wiki/index.php?title=Howto_setup_Raspbian_for_serial_read
+
 - enable serial port for the Current sensor:
   - run `sudo raspi-config`
     - go to 'Interfaces menu', select 'Serial port', choose the options so that it ends up like this:
