@@ -1,3 +1,5 @@
+[![Python checks](https://github.com/vladak/workmon/actions/workflows/python-checks.yml/badge.svg)](https://github.com/vladak/workmon/actions/workflows/python-checks.yml)
+
 # workmon
 
 Work habits monitoring via Raspberry Pi + sensors
