@@ -14,10 +14,10 @@ When shopping around for parts of another project on [Adafruit](https://adafruit
 
 My goal is to provide the following functionality:
   - determine the hours I work (per day/week)
-    - turn on a warning light that I should wrap for the day
+    - turn on a warning light that I should wrap for the day (green)
     - send an alert if I have been working for too long in a given week (via Grafana + PagerDuty)
-  - turn on a warning light if I spend too much configuous time sitting/standing
-    - similarly (different light color) if I work for too long without a break
+  - blink a warning light (orange) if I spend too much configuous time sitting/standing
+    - similarly (different light color) if I work for too long without a break (red)
 
 ## Hardware
 
