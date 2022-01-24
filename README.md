@@ -31,3 +31,23 @@ My goal is to provide the following functionality:
 - old iPhone 5C transparent plastic box (as a housing)
   - to be mounted underneath the table at the back, on one of the cable management boxes in order not to cause measurement interference with my legs etc.
 
+## Setup
+
+- enable serial port for the Current sensor:
+  - run `sudo raspi-config`
+    - go to 'Interfaces menu', select 'Serial port', choose the options so that it ends up like this:
+```
+The serial login shell is disabled
+The serial interface is enabled
+```
+- disable Bluetooth:
+```
+echo "dtoverlay=disable-bt" | sudo tee -a /boot/config.txt
+sudo systemctl disable hciuart
+sudo reboot
+```
+- test the reading:
+```
+stty -echo -F /dev/ttyAMA0 raw speed 38400
+cat /dev/ttyAMA0
+```
