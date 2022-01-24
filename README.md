@@ -25,6 +25,7 @@ My goal is to provide the following functionality:
     - while the presence could be detected in software, I wanted to avoid any changes whatsover to the software of my company provided laptop. Other metrics such as light emitted by the display would not be as reliable.
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
   - to determine if the table is up/down
+- [SCT013](https://www.poweruc.pl/products/split-core-current-transformer-sct013-rated-input-5a-100a?_pos=2&_sid=1684a3985&_ss=r) non invasive Current sensor
 - [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127)
 - [USB to TTL Serial Cable](https://www.adafruit.com/product/954)
 - old iPhone 5C transparent plastic box (as a housing)
