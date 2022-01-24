@@ -22,7 +22,7 @@ My goal is to provide the following functionality:
 - [Raspberry Pi Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/) (side note: as of end of CY 2021 it is out of stock on Adafruit, can be ordered 1 piece per customer locally)
 - [RPIZ CT3V1 HAT](http://lechacal.com/wiki/index.php?title=RPIZ_CT3V1) with Current sensors
   - to detect my presence in front of the computer. This works with sufficient degree of precision because my display has the saver set just to 3 minutes.
-    - while the presence could be detected in software, I wanted to avoid any changes whatsover to the software of my company provided laptop
+    - while the presence could be detected in software, I wanted to avoid any changes whatsover to the software of my company provided laptop. Other metrics such as light emitted by the display would not be as reliable.
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
   - to determine if the table is up/down
 - [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127)
