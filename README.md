@@ -29,7 +29,7 @@ My goal is to provide the following functionality:
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
   - to determine if the table is up/down
 - [SCT013](https://www.poweruc.pl/products/split-core-current-transformer-sct013-rated-input-5a-100a?_pos=2&_sid=1684a3985&_ss=r) non invasive Current sensor
-- [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127)
+- [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127) (no buzzer)
 - [USB to TTL Serial Cable](https://www.adafruit.com/product/954)
 - old iPhone 5C transparent plastic box (as a housing)
   - to be mounted underneath the table at the back, on one of the cable management boxes in order not to cause measurement interference with my legs etc.
