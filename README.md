@@ -61,10 +61,13 @@ based on http://lechacal.com/wiki/index.php?title=RPICT3V1
 - pre-requisites:
 ```
 sudo apt-get install -y python3-venv
+sudo apt-get install -y python3-dev # for RPi.GPIO
 ```
 - install:
 ```
 python3 -m venv env
 . ./env/bin/activate
- pip install -r requirements.txt
+# workaround for RPi.GPIO install: https://raspberrypi.stackexchange.com/a/135463
+export CFLAGS=-fcommon
+pip install -r requirements.txt
 ```
