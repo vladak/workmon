@@ -65,6 +65,10 @@ sudo apt-get install -y python3-dev # for RPi.GPIO
 ```
 - install:
 ```
+sudo mkdir /srv
+sudo apt-get install -y git
+git clone https://github.com/vladak/workmon /srv/workmon
+cd /srv/workmon
 python3 -m venv env
 . ./env/bin/activate
 # workaround for RPi.GPIO install: https://raspberrypi.stackexchange.com/a/135463
