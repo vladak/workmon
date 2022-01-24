@@ -1,0 +1,41 @@
+name: Python checks
+
+on:
+  push:
+    paths:
+      - "**.py"
+      - .github/workflows/python-checks.yml
+
+jobs:
+  checks:
+    name: Python checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v2
+        with:
+          # This is what Raspbian is using.
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run flake8
+        run: |
+          pip install flake8
+          flake8 --ignore=E501 **.py
+      - name: Run pylint
+        run: |
+          pip install pylint
+          pylint **.py
+      - name: Run black in check mode
+        run: |
+          pip install black
+          black --check **.py
+      - name: Run isort in check mode
+        run: |
+          pip install isort
+          isort **.py  --check --diff
