@@ -28,7 +28,8 @@ My goal is to provide the following functionality:
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
   - to determine if the table is up/down
 - [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127) (no buzzer)
-- [USB to TTL Serial Cable](https://www.adafruit.com/product/954)
+- [USB to TTL Serial Cable](https://www.adafruit.com/product/954) (for the distance sensor)
+- [Waveshare 4 Port USB HUB HAT](https://www.waveshare.com/usb-hub-hat.htm)
 - old iPhone 5C transparent plastic box (as a housing)
   - to be mounted underneath the table at the back, on one of the cable management boxes in order not to cause measurement interference with my legs etc.
 
