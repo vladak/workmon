@@ -33,6 +33,12 @@ My goal is to provide the following functionality:
 - old iPhone 5C transparent plastic box (as a housing) with holes drilled for the distance sensor
   - to be mounted underneath the table at the back, on one of the [cable management boxes](https://www.fully.com/en-eu/accessories/wire-management/wiretamer.html) in order not to cause measurement interference with my legs etc.
 
+## Setup
+
+### TP-link P110
+
+TBD
+
 ## Install
 
 - pre-requisites:
