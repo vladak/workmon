@@ -55,5 +55,4 @@ pip install -r requirements.txt
 
 ## Guides:
 
-- RPICT3V1: http://lechacal.com/wiki/index.php?title=RPICT3V1
 - US-100: https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/python-circuitpython
