@@ -3,6 +3,7 @@ wrapper class for US-100 Adafruit sensor to detect table position
 """
 
 import serial
+import os
 
 import adafruit_us100
 
@@ -13,6 +14,9 @@ class Table:
     """
 
     def __init__(self, serial_device_path, baud_rate=9600, height_threshold=100):
+        if not os.path.exists(serial_device_path):
+            raise OSError(f"not a valid path: {serial_device_path}")
+
         self.serial_device_path = serial_device_path
         self.baud_rate = baud_rate
         self.height_threshold = height_threshold

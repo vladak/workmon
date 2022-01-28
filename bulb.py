@@ -2,6 +2,7 @@
 Wrapper class for controlling Adafruit USB light bulb.
 """
 
+import os
 import serial
 
 
@@ -30,6 +31,9 @@ class Bulb:
     blink_cmds = {RED: RED_BLINK, GREEN: GREEN_BLINK, YELLOW: YELLOW_BLINK}
 
     def __init__(self, serial_device_path, baud_rate=9600):
+        if not os.path.exists(serial_device_path):
+            raise OSError(f"not a valid path: {serial_device_path}")
+
         self.serial_device_path = serial_device_path
         self.baud_rate = baud_rate
 
