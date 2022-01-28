@@ -58,6 +58,14 @@ python3 -m venv env
 export CFLAGS=-fcommon
 pip install -r requirements.txt
 ```
+- create `.env` file with `<username>` and `<password>` replaced by the actual values from the TP-link smart plug setup above:
+```
+USERNAME = "<username>"
+PASSWORD = "<password>"
+```
+
+Be sure you don't upload this folder or your `.env` file to a public repository.
+
 
 ## Guides:
 
