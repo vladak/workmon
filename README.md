@@ -22,40 +22,15 @@ My goal is to provide the following functionality:
 ## Hardware
 
 - [Raspberry Pi Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/) (side note: as of end of CY 2021 it is out of stock on Adafruit, can be ordered 1 piece per customer locally)
-- [RPIZ CT3V1 HAT](http://lechacal.com/wiki/index.php?title=RPIZ_CT3V1) with Current sensors
+- TP-link P110 smart WiFi socket
   - to detect my presence in front of the computer. This works with sufficient degree of precision because my display has the saver set just to 3 minutes.
     - while the presence could be detected in software, I wanted to avoid any changes whatsover to the software of my company provided laptop. Other metrics such as light emitted by the display would not be as reliable.
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
   - to determine if the table is up/down
-- [SCT013](https://www.poweruc.pl/products/split-core-current-transformer-sct013-rated-input-5a-100a?_pos=2&_sid=1684a3985&_ss=r) non invasive Current sensor
-  - it needs to be the 5V version otherwise there will be [low](https://raspberrypi.stackexchange.com/questions/104021/ac-current-sensing-giving-low-readings-sct013)/[unusable](https://www.reddit.com/r/esp8266/comments/milfki/help_current_monitoring_with_sct013_ct_clamp/) readings
 - [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127) (no buzzer)
 - [USB to TTL Serial Cable](https://www.adafruit.com/product/954)
 - old iPhone 5C transparent plastic box (as a housing)
   - to be mounted underneath the table at the back, on one of the cable management boxes in order not to cause measurement interference with my legs etc.
-
-## Setup
-
-based on http://lechacal.com/wiki/index.php?title=Howto_setup_Raspbian_for_serial_read
-
-- enable serial port for the Current sensor:
-  - run `sudo raspi-config`
-    - go to 'Interfaces menu', select 'Serial port', choose the options so that it ends up like this:
-```
-The serial login shell is disabled
-The serial interface is enabled
-```
-- disable Bluetooth:
-```
-echo "dtoverlay=disable-bt" | sudo tee -a /boot/config.txt
-sudo systemctl disable hciuart
-sudo reboot
-```
-- test the reading:
-```
-stty -echo -F /dev/ttyAMA0 raw speed 38400
-cat /dev/ttyAMA0
-```
 
 ## Install
 
