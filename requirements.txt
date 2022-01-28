@@ -1,2 +1,4 @@
 pyserial
 adafruit-circuitpython-us100
+prometheus-client
+python_decouple
