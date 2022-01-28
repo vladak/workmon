@@ -31,7 +31,7 @@ My goal is to provide the following functionality:
 - [USB to TTL Serial Cable](https://www.adafruit.com/product/954) (for the distance sensor)
 - [Waveshare 4 Port USB HUB HAT](https://www.waveshare.com/usb-hub-hat.htm)
 - old iPhone 5C transparent plastic box (as a housing) with holes drilled for the distance sensor
-  - to be mounted underneath the table at the back, on one of the cable management boxes in order not to cause measurement interference with my legs etc.
+  - to be mounted underneath the table at the back, on one of the [cable management boxes](https://www.fully.com/en-eu/accessories/wire-management/wiretamer.html) in order not to cause measurement interference with my legs etc.
 
 ## Install
 
