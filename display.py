@@ -23,7 +23,7 @@ class Display:
         self.threshold = threshold
 
     def __enter__(self):
-        # XXX
+        pass
 
     def __exit__(self):
         self.close()
@@ -37,4 +37,4 @@ class Display:
         return not self.is_on()
 
     def close(self):
-        # XXX
+        pass
