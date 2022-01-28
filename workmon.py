@@ -21,7 +21,7 @@ from logutil import LogLevelAction
 
 def get_tty_usb(id_to_match):
     """
-    Find device tree entry for given ID. Normally this should return /dev/ttyUSB*
+    Find device tree entry for given ID/substring. Normally this should return /dev/ttyUSB*
     """
 
     logger = logging.getLogger(__name__)
@@ -33,7 +33,8 @@ def get_tty_usb(id_to_match):
     for item in os.listdir(by_id_dir_path):
         if id_to_match in item:
             logger.debug(f"found a match for {id_to_match}: {item}")
-            return os.readlink(os.path.join(by_id_dir_path, item))
+            link_destination = os.readlink(os.path.join(by_id_dir_path, item))
+            return os.path.realpath(os.path.join("/dev/serial/by-id/", link_destination))
 
     return None
 
