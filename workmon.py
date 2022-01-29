@@ -58,6 +58,7 @@ def sensor_loop(timeout, display, table, bulb):
     display_contig_max = 3600
 
     # Daily work duration in hours
+    # TODO: make this configurable
     display_daily_max = 3600 * 7
 
     # Break time in seconds
