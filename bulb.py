@@ -3,6 +3,7 @@ Wrapper class for controlling Adafruit USB light bulb.
 """
 
 import os
+
 import serial
 
 

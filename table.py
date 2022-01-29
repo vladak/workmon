@@ -2,10 +2,10 @@
 wrapper class for US-100 Adafruit sensor to detect table position
 """
 
-import serial
 import os
 
 import adafruit_us100
+import serial
 
 
 class Table:
