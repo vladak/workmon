@@ -34,7 +34,9 @@ def get_tty_usb(id_to_match):
         if id_to_match in item:
             logger.debug(f"found a match for {id_to_match}: {item}")
             link_destination = os.readlink(os.path.join(by_id_dir_path, item))
-            return os.path.realpath(os.path.join("/dev/serial/by-id/", link_destination))
+            return os.path.realpath(
+                os.path.join("/dev/serial/by-id/", link_destination)
+            )
 
     return None
 
@@ -50,7 +52,7 @@ def sensor_loop(timeout, display, table, bulb):
     display_gauge = "display"
     gauges = {
         table_gauge: Gauge("table_position", "Table position"),
-        display_gauge: Gauge("display_status", "Display status")
+        display_gauge: Gauge("display_status", "Display status"),
     }
 
     # Maximum time without a break (in seconds)
@@ -84,7 +86,9 @@ def sensor_loop(timeout, display, table, bulb):
     # Infinite loop to sample data from the sensors.
     #
     while True:
-        table_state = table.is_up()  # Unlike display, not interested in actual position.
+        table_state = (
+            table.is_up()
+        )  # Unlike display, not interested in actual position.
         gauges[table_gauge].set(int(table_state))
         display_on = display.is_on()
         gauges[display_gauge].set(int(display_on))
@@ -106,16 +110,24 @@ def sensor_loop(timeout, display, table, bulb):
             break_time = 0
 
             display_contig_duration = display_contig_duration + delta
-            logger.debug(f"display contiguously on for {display_contig_duration} seconds")
+            logger.debug(
+                f"display contiguously on for {display_contig_duration} seconds"
+            )
             if display_contig_duration > display_contig_max:
-                logger.info(f"spent more than {display_contig_max} seconds ({display_contig_duration} with display on")
+                logger.info(
+                    f"spent more than {display_contig_max} seconds ({display_contig_duration} with display on"
+                )
                 # TODO: make this configurable
                 bulb.blink("red")
 
             display_daily_duration = display_daily_duration + delta
-            logger.debug(f"daily display duration now {display_daily_duration} seconds")  # TODO: format the time hh:ss
+            logger.debug(
+                f"daily display duration now {display_daily_duration} seconds"
+            )  # TODO: format the time hh:ss
             if display_daily_duration > display_daily_max:
-                logger.info(f"daily display duration {display_daily_duration} over {display_daily_max} seconds")
+                logger.info(
+                    f"daily display duration {display_daily_duration} over {display_daily_max} seconds"
+                )
                 # TODO: make this configurable
                 # TODO: this should perhaps occur only couple of times
                 bulb.blink("green")
@@ -128,8 +140,10 @@ def sensor_loop(timeout, display, table, bulb):
                 break_time = break_time + delta
                 logger.debug(f"break time now {break_time} seconds")
                 if break_time > break_duration:
-                    logger.info(f"Had a break for more than {break_time} seconds, "
-                                f"resetting display/table duration time")
+                    logger.info(
+                        f"Had a break for more than {break_time} seconds, "
+                        f"resetting display/table duration time"
+                    )
                     display_contig_duration = 0
                     table_time = 0
 
@@ -137,13 +151,19 @@ def sensor_loop(timeout, display, table, bulb):
         if last_table_state == table_state:
             if display_on and display_contig_duration > 0:
                 table_time = table_time + delta
-                logger.debug(f"table maintained the position for {table_time} "
-                             f"while working for {display_contig_duration}")
+                logger.debug(
+                    f"table maintained the position for {table_time} "
+                    f"while working for {display_contig_duration}"
+                )
                 if table_time > table_state_max:
-                    logger.info(f"table spent more than {table_state_max} in current position")
+                    logger.info(
+                        f"table spent more than {table_state_max} in current position"
+                    )
                     bulb.blink("yellow")
         else:
-            logger.debug(f"table changed the position from {last_table_state} to {table_state}")
+            logger.debug(
+                f"table changed the position from {last_table_state} to {table_state}"
+            )
             table_time = 0
 
         last_table_state = table_state
@@ -168,20 +188,24 @@ def main():
         help="port to listen on for HTTP requests",
     )
     parser.add_argument(
-        "-s", "--sleep", default=5, type=int,
-        help="sleep duration between iterations in seconds"
+        "-s",
+        "--sleep",
+        default=5,
+        type=int,
+        help="sleep duration between iterations in seconds",
     )
     parser.add_argument(
-        "-H", "--height", default=120, type=int,
-        help="table height threshold"
+        "-H", "--height", default=120, type=int, help="table height threshold"
     )
     parser.add_argument(
-        "-W", "--wattage", default=12345, type=int,
-        help="wattage threshold for detecting whether display is on/off"
+        "-W",
+        "--wattage",
+        default=12345,
+        type=int,
+        help="wattage threshold for detecting whether display is on/off",
     )
     parser.add_argument(
-        "-U", "--url", type=int, required=True,
-        help="URL for the TP-link smart plug"
+        "-U", "--url", type=int, required=True, help="URL for the TP-link smart plug"
     )
     parser.add_argument(
         "-l",
@@ -211,7 +235,9 @@ def main():
 
     try:
         with Display(args.url, username, password, args.wattage) as display:
-            with Table(get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height) as table:
+            with Table(
+                get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height
+            ) as table:
                 with Bulb(get_tty_usb("1a86")) as bulb:
                     sensor_loop(args.timeout, display, table, bulb)
     except DisplayException as exc:
