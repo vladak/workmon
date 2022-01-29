@@ -46,11 +46,11 @@ def sensor_loop(timeout, display, table, bulb):
 
     logger = logging.getLogger(__name__)
 
-    TABLE = "table"
-    DISPLAY = "display"
+    table_gauge = "table"
+    display_gauge = "display"
     gauges = {
-        TABLE: Gauge("table_position", "Table position"),
-        DISPLAY: Gauge("display_status", "Display status")
+        table_gauge: Gauge("table_position", "Table position"),
+        display_gauge: Gauge("display_status", "Display status")
     }
 
     # Maximum time without a break in seconds.
@@ -66,18 +66,23 @@ def sensor_loop(timeout, display, table, bulb):
 
     last_table_state = None
     last_display_state = None
+    # the last duration for which the display was on (in seconds)
     display_contig_duration = 0
+    # total in the display was on during the day (in seconds)
     display_daily_duration = 0
+    # duration of the last break (in seconds)
     break_time = 0
+    # the duration for which the table has been in the last position (in seconds)
     table_time = 0
+
     #
     # Infinite loop to sample data from the sensors.
     #
     while True:
         table_state = table.is_up()  # Unlike display, not interested in actual position.
-        gauges[TABLE].set(int(table_state))
+        gauges[table_gauge].set(int(table_state))
         display_on = display.is_on()
-        gauges[DISPLAY].set(int(display_on))
+        gauges[display_gauge].set(int(display_on))
 
         # How much time in seconds has elapsed since the last loop iteration.
         # TODO: for now run with this estimate
