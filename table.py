@@ -22,7 +22,9 @@ class Table:
         self.height_threshold = height_threshold
 
     def __enter__(self):
-        self.uart = serial.Serial(self.serial_device_path, baudrate=self.baud_rate, timeout=1)
+        self.uart = serial.Serial(
+            self.serial_device_path, baudrate=self.baud_rate, timeout=1
+        )
         self.us100 = adafruit_us100.US100(self.uart)
 
     def __exit__(self):

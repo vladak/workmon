@@ -11,6 +11,7 @@ class Bulb:
     """
     Supports on/off/blink for red, green, yellow.
     """
+
     RED_ON = 0x11
     RED_OFF = 0x21
     RED_BLINK = 0x41
