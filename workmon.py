@@ -115,7 +115,8 @@ def sensor_loop(timeout, display, table, bulb):
             )
             if display_contig_duration > display_contig_max:
                 logger.info(
-                    f"spent more than {display_contig_max} seconds ({display_contig_duration} with display on"
+                    f"spent {display_contig_duration} seconds "
+                    f"(more then {display_contig_max}) with display on"
                 )
                 # TODO: make this configurable
                 bulb.blink("red")
@@ -126,7 +127,8 @@ def sensor_loop(timeout, display, table, bulb):
             )  # TODO: format the time hh:ss
             if display_daily_duration > display_daily_max:
                 logger.info(
-                    f"daily display duration {display_daily_duration} over {display_daily_max} seconds"
+                    f"daily display duration {display_daily_duration} "
+                    f"over {display_daily_max} seconds"
                 )
                 # TODO: make this configurable
                 # TODO: this should perhaps occur only couple of times

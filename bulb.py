@@ -39,6 +39,9 @@ class Bulb:
         self.serial_device_path = serial_device_path
         self.baud_rate = baud_rate
 
+        self.cleanup()
+
+    def cleanup(self):
         self._send_command(self.RED_OFF)
         self._send_command(self.YELLOW_OFF)
         self._send_command(self.GREEN_OFF)
@@ -53,10 +56,7 @@ class Bulb:
         self.bulb_serial.write(bytes([cmd]))
 
     def close(self):
-        self._send_command(self.RED_OFF)
-        self._send_command(self.YELLOW_OFF)
-        self._send_command(self.GREEN_OFF)
-
+        self.cleanup()
         self.bulb_serial.close()
 
     # TODO: add variant with timeout
@@ -64,6 +64,7 @@ class Bulb:
         self._send_command(self.blink_cmds.get(color.lower()))
 
     # TODO: add variant with timeout
+    # pylint: disable=invalid-name
     def on(self, color):
         self._send_command(self.on_cmds.get(color.lower()))
 
