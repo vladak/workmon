@@ -53,17 +53,21 @@ def sensor_loop(timeout, display, table, bulb):
         display_gauge: Gauge("display_status", "Display status")
     }
 
-    # Maximum time without a break in seconds.
+    # Maximum time without a break (in seconds)
     # TODO: make this tunable
     display_contig_max = 3600
 
-    # Daily work duration in hours
+    # recommended work duration (in seconds)
     # TODO: make this configurable
     display_daily_max = 3600 * 7
 
-    # Break time in seconds
+    # the minimal duration of not working that is considered a break time (in seconds)
     # TODO: make this configurable
     break_duration = 5 * 60
+
+    # maximum time the table should be in single position while working (in seconds)
+    # TODO: make this configurable
+    table_state_max = 20 * 60
 
     last_table_state = None
     last_display_state = None
@@ -131,11 +135,12 @@ def sensor_loop(timeout, display, table, bulb):
 
         # Now check the table.
         if last_table_state == table_state:
-            if display_on:  # TODO: use display_contig_duration ?
+            if display_on and display_contig_duration > 0:
                 table_time = table_time + delta
-                logger.debug(f"table maintained the position for XXX while working for XXX")
-                if table_time > XXX:
-                    logger.info("XXX")
+                logger.debug(f"table maintained the position for {table_time} "
+                             f"while working for {display_contig_duration}")
+                if table_time > table_state_max:
+                    logger.info(f"table spent more than {table_state_max} in current position")
                     bulb.blink("yellow")
         else:
             logger.debug(f"table changed the position from {last_table_state} to {table_state}")
