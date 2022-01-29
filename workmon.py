@@ -4,19 +4,19 @@ Monitor table position and display on/off state.
 """
 
 import argparse
-import os
-import time
-import sys
 import logging
+import os
+import sys
+import time
+from datetime import datetime
 
 from decouple import config
-from datetime import datetime
 from prometheus_client import Gauge, start_http_server
 
 from bulb import Bulb
 from display import Display, DisplayException
-from table import Table
 from logutil import LogLevelAction
+from table import Table
 
 
 def get_tty_usb(id_to_match):
