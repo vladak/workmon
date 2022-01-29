@@ -138,7 +138,7 @@ def sensor_loop(timeout, display, table, bulb):
                     logger.info("XXX")
                     bulb.blink("yellow")
         else:
-            logger.debug(f"table changed the position")
+            logger.debug(f"table changed the position from {last_table_state} to {table_state}")
             table_time = 0
 
         last_table_state = table_state
