@@ -29,11 +29,17 @@ class Display:
         self.close()
 
     def is_on(self):
+        """
+        is the display on ?
+        """
         value = 1234
 
         return int(value) > self.threshold
 
     def is_off(self):
+        """
+        is the display off ?
+        """
         return not self.is_on()
 
     def close(self):

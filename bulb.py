@@ -61,12 +61,21 @@ class Bulb:
 
     # TODO: add variant with timeout
     def blink(self, color):
+        """
+        blink with given color
+        """
         self._send_command(self.blink_cmds.get(color.lower()))
 
     # TODO: add variant with timeout
     # pylint: disable=invalid-name
     def on(self, color):
+        """
+        turn on given color
+        """
         self._send_command(self.on_cmds.get(color.lower()))
 
     def off(self, color):
+        """
+        turn off given color
+        """
         self._send_command(self.off_cmds.get(color.lower()))

@@ -31,9 +31,15 @@ class Table:
         self.close()
 
     def is_up(self):
+        """
+        is the table up ?
+        """
         return self.us100.distance > self.height_threshold
 
     def is_down(self):
+        """
+        is the table down ?
+        """
         return not self.is_up()
 
     def close(self):
