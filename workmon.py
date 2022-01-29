@@ -149,7 +149,7 @@ def sensor_loop(timeout, display, table, bulb):
 
         # Now check the table.
         if last_table_state == table_state:
-            if display_on and display_contig_duration > 0:
+            if display_on:
                 table_time = table_time + delta
                 logger.debug(
                     f"table maintained the position for {table_time} "
