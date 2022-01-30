@@ -63,9 +63,15 @@ pip install -r requirements.txt
 USERNAME = "<username>"
 PASSWORD = "<password>"
 ```
+- configure the service: create `/srv/workmon/environment` and setup these environment variables:
+  - `USERNAME`: TP-link username
+  - `PASSWORD`: TP-link password
+  - `ARGS`: additional `workmon.py` arguments
+    - it will definitely need to contain `--hostname` with an argument (the TP-link hostname) which is required 
+    - keep in mind that this is not a shell syntax so using double quotes will break argument passing
 - setup the service (assumes the `pi` user)
 ```
-  sudo cp /srv/weather/workmon.service /etc/systemd/system/
+  sudo cp /srv/workmon/workmon.service /etc/systemd/system/
   sudo systemctl enable workmon
   sudo systemctl daemon-reload  # in case the service file changed
   sudo systemctl start workmon

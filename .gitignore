@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Secrets
-.env
+# files that may contain secrets
+environment

@@ -10,7 +10,6 @@ import sys
 import time
 from datetime import datetime
 
-from decouple import config
 from prometheus_client import Gauge, start_http_server
 
 from bulb import Bulb
@@ -227,13 +226,13 @@ def main():
     logger.info(f"Starting HTTP server on port {args.port}")
     start_http_server(args.port)
 
-    username = config("USERNAME")
+    username = os.environ.get("USERNAME")
     if not username:
-        logger.error("USERNAME is required")
+        logger.error("The USERNAME environment variable is required")
         sys.exit(1)
-    password = config("PASSWORD")
+    password = os.environ.get("PASSWORD")
     if not password:
-        logger.error("PASSWORD is required")
+        logger.error("The PASSWORD environment variable is required")
         sys.exit(1)
 
     try:
