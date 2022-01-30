@@ -50,4 +50,3 @@ class Display:
         is the display off ?
         """
         return not self.is_on()
-

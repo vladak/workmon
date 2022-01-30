@@ -202,7 +202,7 @@ def main():
     parser.add_argument(
         "-W",
         "--wattage",
-        default=12345, # TODO
+        default=12345,  # TODO
         type=int,
         help="wattage threshold for detecting whether display is on/off",
     )
