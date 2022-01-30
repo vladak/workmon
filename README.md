@@ -58,14 +58,19 @@ python3 -m venv env
 export CFLAGS=-fcommon
 pip install -r requirements.txt
 ```
-- create `.env` file with `<username>` and `<password>` replaced by the actual values from the TP-link smart plug setup above:
+- create `.env` file (make sure not to upload this folder or your `.env` file to a public repository) with `<username>` and `<password>` replaced by the actual values from the TP-link smart plug setup above:
 ```
 USERNAME = "<username>"
 PASSWORD = "<password>"
 ```
-
-Be sure you don't upload this folder or your `.env` file to a public repository.
-
+- setup the service (assumes the `pi` user)
+```
+  sudo cp /srv/weather/workmon.service /etc/systemd/system/
+  sudo systemctl enable workmon
+  sudo systemctl daemon-reload  # in case the service file changed
+  sudo systemctl start workmon
+  sudo systemctl status workmon
+```
 
 ## Guides:
 
