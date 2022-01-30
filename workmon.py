@@ -202,12 +202,13 @@ def main():
     parser.add_argument(
         "-W",
         "--wattage",
-        default=12345,
+        default=12345, # TODO
         type=int,
         help="wattage threshold for detecting whether display is on/off",
     )
     parser.add_argument(
-        "-U", "--url", type=int, required=True, help="URL for the TP-link smart plug"
+        "-H", "--hostname", type=int, required=True,
+        help="hostname (IP address) for the TP-link smart plug"
     )
     parser.add_argument(
         "-l",
@@ -236,12 +237,12 @@ def main():
         sys.exit(1)
 
     try:
-        with Display(args.url, username, password, args.wattage) as display:
-            with Table(
-                get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height
-            ) as table:
-                with Bulb(get_tty_usb("1a86")) as bulb:
-                    sensor_loop(args.timeout, display, table, bulb)
+        display = Display(args.hostname, username, password, args.wattage)
+        with Table(
+            get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height
+        ) as table:
+            with Bulb(get_tty_usb("1a86")) as bulb:
+                sensor_loop(args.timeout, display, table, bulb)
     except DisplayException as exc:
         logger.error(f"failed to open the display: {exc}")
         sys.exit(1)

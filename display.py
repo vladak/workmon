@@ -1,6 +1,9 @@
 """
 wrapper class for TP-link smart plug wattage
 """
+import logging
+
+from PyP100 import PyP110
 
 
 class DisplayException(Exception):
@@ -16,23 +19,29 @@ class Display:
     Assumes Wattage sensor measurements w.r.t. given threshold.
     """
 
-    def __init__(self, url, username, password, threshold):
-        self.url = url
-        self.username = username
-        self.password = password
+    def __init__(self, hostname, username, password, threshold):
+        """
+        :param hostname hostname or IP address
+        :param username username
+        :param password password
+        :param threshold value in Watts to set apart the display to be on/off
+        """
         self.threshold = threshold
 
-    def __enter__(self):
-        pass
+        self.p110 = PyP110.P110(hostname, username, password)
+        self.p110.handshake()
+        self.p110.login()
 
-    def __exit__(self):
-        self.close()
+        self.logger = logging.getLogger(__name__)
 
     def is_on(self):
         """
         is the display on ?
         """
-        value = 1234
+
+        energy_usage_dict = self.p110.getEnergyUsage()
+        self.logger.debug(f"Got energy usage dictionary: {energy_usage_dict}")
+        value = energy_usage_dict["current_power"]
 
         return int(value) > self.threshold
 
@@ -42,5 +51,3 @@ class Display:
         """
         return not self.is_on()
 
-    def close(self):
-        pass
