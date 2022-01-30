@@ -43,4 +43,7 @@ class Table:
         return not self.is_up()
 
     def close(self):
+        """
+        Close the serial line.
+        """
         self.uart.close()

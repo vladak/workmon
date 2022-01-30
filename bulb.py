@@ -42,6 +42,9 @@ class Bulb:
         self.cleanup()
 
     def cleanup(self):
+        """
+        Turn all the diodes off.
+        """
         self._send_command(self.RED_OFF)
         self._send_command(self.YELLOW_OFF)
         self._send_command(self.GREEN_OFF)
@@ -56,6 +59,9 @@ class Bulb:
         self.bulb_serial.write(bytes([cmd]))
 
     def close(self):
+        """
+        Turn all the diodes off and close the serial line.
+        """
         self.cleanup()
         self.bulb_serial.close()
 
