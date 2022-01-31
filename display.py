@@ -41,7 +41,7 @@ class Display:
 
         energy_usage_dict = self.p110.getEnergyUsage()
         self.logger.debug(f"Got energy usage dictionary: {energy_usage_dict}")
-        value = energy_usage_dict["current_power"]
+        value = energy_usage_dict.get("result").get("current_power")
 
         return int(value) > self.threshold
 
