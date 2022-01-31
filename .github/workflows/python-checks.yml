@@ -5,6 +5,7 @@ on:
     paths:
       - "**.py"
       - .github/workflows/python-checks.yml
+      - pylintrc
 
 jobs:
   checks:
