@@ -151,7 +151,7 @@ def sensor_loop(timeout, display, table, bulb):
                 # TODO: this should perhaps occur only couple of times
                 bulb.blink("green")
         else:
-            logger.debug(f"display off (after {time_delta_fmt(display_contig_duration)}")
+            logger.debug(f"display off (after {time_delta_fmt(display_contig_duration)})")
             # Display changed state on -> off, start counting the break.
             if last_display_state != display_on:
                 break_time = 0
