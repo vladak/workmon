@@ -40,6 +40,7 @@ def get_tty_usb(id_to_match):
     return None
 
 
+# pylint: disable=too-many-locals,too-many-branches,too-many-statements
 def sensor_loop(timeout, display, table, bulb):
     """
     Acquire data from the sensors.
