@@ -196,7 +196,7 @@ def main():
         help="sleep duration between iterations in seconds",
     )
     parser.add_argument(
-        "-H", "--height", default=120, type=int, help="table height threshold"
+        "--height", default=120, type=int, help="table height threshold"
     )
     parser.add_argument(
         "-W",
@@ -206,7 +206,7 @@ def main():
         help="wattage threshold for detecting whether display is on/off",
     )
     parser.add_argument(
-        "-H", "--hostname", type=int, required=True,
+        "--hostname", type=int, required=True,
         help="hostname (IP address) for the TP-link smart plug"
     )
     parser.add_argument(
