@@ -206,7 +206,7 @@ def main():
         help="wattage threshold for detecting whether display is on/off",
     )
     parser.add_argument(
-        "--hostname", type=int, required=True,
+        "--hostname", required=True,
         help="hostname (IP address) for the TP-link smart plug"
     )
     parser.add_argument(
