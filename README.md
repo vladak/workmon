@@ -37,7 +37,20 @@ My goal is to provide the following functionality:
 
 ### TP-link P110
 
-TBD
+Install the Tapo app on a mobile phone. Register new account, remember the user ID and password as these will be necessary.
+
+### Prometheus
+
+add this section under `scrape_configs` in `/etc/prometheus/prometheus.yml`:
+```yml
+  - job_name: workmon
+    static_configs:
+      - targets: ['workmon:8111']
+```
+
+### Grafana
+
+TBD dashboard provisioning
 
 ## Install
 
