@@ -32,7 +32,7 @@ class Table(object):
 
         return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
 
     def is_up(self):
