@@ -32,6 +32,7 @@ class Table:
 
         return self
 
+    # pylint: disable=unexpected-special-method-signature
     def __exit__(self):
         self.close()
 
