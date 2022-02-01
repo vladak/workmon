@@ -71,12 +71,7 @@ python3 -m venv env
 export CFLAGS=-fcommon
 pip install -r requirements.txt
 ```
-- create `.env` file (make sure not to upload this folder or your `.env` file to a public repository) with `<username>` and `<password>` replaced by the actual values from the TP-link smart plug setup above:
-```
-USERNAME = "<username>"
-PASSWORD = "<password>"
-```
-- configure the service: create `/srv/workmon/environment` and setup these environment variables:
+- configure the service: create `/srv/workmon/environment` file and setup these environment variables inside:
   - `USERNAME`: TP-link username
   - `PASSWORD`: TP-link password
   - `ARGS`: additional `workmon.py` arguments
