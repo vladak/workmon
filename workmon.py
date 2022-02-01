@@ -90,7 +90,8 @@ def sensor_loop(timeout, display, table, bulb):
         )  # Unlike display, not interested in actual position.
         gauges[table_gauge].set(int(table_state))
         display_on = display.is_on()
-        gauges[display_gauge].set(int(display_on))
+        if display_on:
+            gauges[display_gauge].set(int(display_on))
 
         # How much time in seconds has elapsed since the last loop iteration.
         # TODO: for now run with this estimate

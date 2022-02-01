@@ -3,6 +3,7 @@ wrapper class for TP-link smart plug wattage
 """
 import logging
 
+import requests
 from PyP100 import PyP110
 
 
@@ -36,10 +37,15 @@ class Display:
 
     def is_on(self):
         """
-        is the display on ?
+        is the display on ? returns None in case the state cannot be determined.
         """
 
-        energy_usage_dict = self.p110.getEnergyUsage()
+        try:
+            energy_usage_dict = self.p110.getEnergyUsage()
+        except requests.exceptions.ConnectionError as exc:
+            self.logger.error(f"cannot determine the state of the display: {exc}")
+            return None
+
         self.logger.debug(f"Got energy usage dictionary: {energy_usage_dict}")
         value = energy_usage_dict.get("result").get("current_power")
 
@@ -49,4 +55,7 @@ class Display:
         """
         is the display off ?
         """
+        if self.is_on() is None:
+            return None
+
         return not self.is_on()
