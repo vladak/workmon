@@ -56,7 +56,6 @@ class Bulb:
 
         return self
 
-
     def __exit__(self):
         self.close()
 
