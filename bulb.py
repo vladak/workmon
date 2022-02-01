@@ -8,7 +8,7 @@ from contextlib import contextmanager
 import serial
 
 
-class Bulb:
+class Bulb(object):
     """
     Supports on/off/blink for red, green, yellow.
     """
