@@ -27,6 +27,8 @@ class Table:
         )
         self.us100 = adafruit_us100.US100(self.uart)
 
+        return self
+
     def __exit__(self):
         self.close()
 

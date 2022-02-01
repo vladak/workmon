@@ -39,8 +39,6 @@ class Bulb:
         self.serial_device_path = serial_device_path
         self.baud_rate = baud_rate
 
-        self.cleanup()
-
     def cleanup(self):
         """
         Turn all the diodes off.
@@ -51,6 +49,10 @@ class Bulb:
 
     def __enter__(self):
         self.bulb_serial = serial.Serial(self.serial_device_path, self.baud_rate)
+
+        self.cleanup()
+
+        return self
 
     def __exit__(self):
         self.close()
