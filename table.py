@@ -21,6 +21,9 @@ class Table:
         self.baud_rate = baud_rate
         self.height_threshold = height_threshold
 
+        self.uart = None
+        self.us100 = None
+
     def __enter__(self):
         self.uart = serial.Serial(
             self.serial_device_path, baudrate=self.baud_rate, timeout=1
