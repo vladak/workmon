@@ -8,7 +8,7 @@ import adafruit_us100
 import serial
 
 
-class Table(object):
+class Table:
     """
     provides 1 bit of information w.r.t. given threshold: whether the table is up or down
     """

@@ -7,7 +7,7 @@ import os
 import serial
 
 
-class Bulb(object):
+class Bulb:
     """
     Supports on/off/blink for red, green, yellow.
     """
