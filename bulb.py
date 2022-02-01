@@ -2,6 +2,7 @@
 Wrapper class for controlling Adafruit USB light bulb.
 """
 
+import logging
 import os
 
 import serial
@@ -41,6 +42,8 @@ class Bulb:
 
         self.bulb_serial = None
 
+        self.logger = logging.getLogger(__name__)
+
     def cleanup(self):
         """
         Turn all the diodes off.
@@ -75,6 +78,7 @@ class Bulb:
         """
         blink with given color
         """
+        self.logger.debug(f"blinking with {color}")
         self._send_command(self.blink_cmds.get(color.lower()))
 
     # TODO: add variant with timeout
@@ -83,10 +87,12 @@ class Bulb:
         """
         turn on given color
         """
+        self.logger.debug(f"turning {color} on")
         self._send_command(self.on_cmds.get(color.lower()))
 
     def off(self, color):
         """
         turn off given color
         """
+        self.logger.debug(f"turning {color} off")
         self._send_command(self.off_cmds.get(color.lower()))
