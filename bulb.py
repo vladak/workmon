@@ -3,6 +3,7 @@ Wrapper class for controlling Adafruit USB light bulb.
 """
 
 import os
+from contextlib import contextmanager
 
 import serial
 
@@ -49,15 +50,15 @@ class Bulb:
         self._send_command(self.YELLOW_OFF)
         self._send_command(self.GREEN_OFF)
 
-    def __enter__(self):
-        self.bulb_serial = serial.Serial(self.serial_device_path, self.baud_rate)
+    @contextmanager
+    def open_serial(self):
+        try:
+            self.bulb_serial = serial.Serial(self.serial_device_path, self.baud_rate)
+            self.cleanup()
 
-        self.cleanup()
-
-        return self
-
-    def __exit__(self):
-        self.close()
+            yield self
+        finally:
+            self.close()
 
     def _send_command(self, cmd):
         self.bulb_serial.write(bytes([cmd]))

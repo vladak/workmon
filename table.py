@@ -3,6 +3,7 @@ wrapper class for US-100 Adafruit sensor to detect table position
 """
 
 import os
+from contextlib import contextmanager
 
 import adafruit_us100
 import serial
@@ -24,16 +25,17 @@ class Table:
         self.uart = None
         self.us100 = None
 
-    def __enter__(self):
-        self.uart = serial.Serial(
-            self.serial_device_path, baudrate=self.baud_rate, timeout=1
-        )
-        self.us100 = adafruit_us100.US100(self.uart)
+    @contextmanager
+    def open_serial(self):
+        try:
+            self.uart = serial.Serial(
+                self.serial_device_path, baudrate=self.baud_rate, timeout=1
+            )
+            self.us100 = adafruit_us100.US100(self.uart)
 
-        return self
-
-    def __exit__(self):
-        self.close()
+            yield self
+        finally:
+            self.close()
 
     def is_up(self):
         """
