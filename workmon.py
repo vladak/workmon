@@ -98,7 +98,7 @@ def sensor_loop(timeout, display, table, bulb):
 
         date_now = datetime.now()
         # TODO: assumes normal life, make this tunable
-        if date_now.hour > 6:
+        if date_now.hour == 6:
             logger.debug("New work day is starting")
             display_daily_duration = 0
             table_time = 0
