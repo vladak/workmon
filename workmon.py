@@ -201,7 +201,7 @@ def main():
     parser.add_argument(
         "-W",
         "--wattage",
-        default=70000,  # Samsung 24" display
+        default=70,  # Samsung 24" display takes ~74W when on.
         type=int,
         help="wattage threshold for detecting whether display is on/off",
     )

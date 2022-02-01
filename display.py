@@ -43,7 +43,7 @@ class Display:
         self.logger.debug(f"Got energy usage dictionary: {energy_usage_dict}")
         value = energy_usage_dict.get("result").get("current_power")
 
-        return int(value) > self.threshold
+        return int(value) / 1000 > self.threshold
 
     def is_off(self):
         """
