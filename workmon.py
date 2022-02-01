@@ -157,7 +157,7 @@ def sensor_loop(timeout, display, table, bulb):
                 break_time = 0
             else:
                 break_time = break_time + delta
-                logger.debug(f"break time now {break_time} seconds")
+                logger.debug(f"break time now {time_delta_fmt(break_time)}")
                 if break_time > break_duration:
                     logger.info(
                         f"Had a break for more than {time_delta_fmt(break_time)}, "
