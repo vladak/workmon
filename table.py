@@ -53,4 +53,5 @@ class Table(object):
         """
         Close the serial line.
         """
-        self.uart.close()
+        if self.uart:
+            self.uart.close()

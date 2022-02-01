@@ -61,7 +61,8 @@ class Bulb(object):
             self.close()
 
     def _send_command(self, cmd):
-        self.bulb_serial.write(bytes([cmd]))
+        if self.bulb_serial:
+            self.bulb_serial.write(bytes([cmd]))
 
     def close(self):
         """
