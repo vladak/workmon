@@ -241,7 +241,7 @@ def main():
             get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height
         ) as table:
             with Bulb(get_tty_usb("1a86")) as bulb:
-                sensor_loop(args.timeout, display, table, bulb)
+                sensor_loop(args.sleep, display, table, bulb)
     except DisplayException as exc:
         logger.error(f"failed to open the display: {exc}")
         sys.exit(1)
