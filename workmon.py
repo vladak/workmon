@@ -27,11 +27,11 @@ def time_delta_fmt(seconds):
 
     if seconds < 3600:
         minutes, seconds = divmod(seconds, 60)
-        return f"{minutes}:{seconds}"
+        return f"{minutes}:{seconds:02}"
 
     hours, remainder = divmod(seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
-    return f"{hours}:{minutes}:{seconds}"
+    return f"{hours}:{minutes:02}:{seconds:02}"
 
 
 def get_tty_usb(id_to_match):
