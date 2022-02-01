@@ -56,8 +56,7 @@ class Bulb:
 
         return self
 
-    # pylint: disable=unexpected-special-method-signature
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
 
     def _send_command(self, cmd):

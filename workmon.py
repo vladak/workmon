@@ -18,6 +18,22 @@ from logutil import LogLevelAction
 from table import Table
 
 
+def time_delta_fmt(seconds):
+    """
+    :return number of seconds formatted for logging
+    """
+    if seconds < 60:
+        return f"{seconds}s"
+
+    if seconds < 3600:
+        minutes, seconds = divmod(seconds, 60)
+        return f"{minutes}:{seconds}"
+
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours}:{minutes}:{seconds}"
+
+
 def get_tty_usb(id_to_match):
     """
     Find device tree entry for given ID/substring. Normally this should return /dev/ttyUSB*
@@ -112,30 +128,30 @@ def sensor_loop(timeout, display, table, bulb):
 
             display_contig_duration = display_contig_duration + delta
             logger.debug(
-                f"display contiguously on for {display_contig_duration} seconds"
+                f"display contiguously on for {time_delta_fmt(display_contig_duration)}"
             )
             if display_contig_duration > display_contig_max:
                 logger.info(
-                    f"spent {display_contig_duration} seconds "
-                    f"(more then {display_contig_max}) with display on"
+                    f"spent {time_delta_fmt(display_contig_duration)} "
+                    f"(more then {time_delta_fmt(display_contig_max)}) with display on"
                 )
                 # TODO: make this configurable
                 bulb.blink("red")
 
             display_daily_duration = display_daily_duration + delta
             logger.debug(
-                f"daily display duration now {display_daily_duration} seconds"
-            )  # TODO: format the time hh:ss
+                f"daily display duration now {time_delta_fmt(display_daily_duration)}"
+            )
             if display_daily_duration > display_daily_max:
                 logger.info(
-                    f"daily display duration {display_daily_duration} "
-                    f"over {display_daily_max} seconds"
+                    f"daily display duration {time_delta_fmt(display_daily_duration)} "
+                    f"over {time_delta_fmt(display_daily_max)}"
                 )
                 # TODO: make this configurable
                 # TODO: this should perhaps occur only couple of times
                 bulb.blink("green")
         else:
-            logger.debug(f"display off (after {display_contig_duration} seconds)")
+            logger.debug(f"display off (after {time_delta_fmt(display_contig_duration)}")
             # Display changed state on -> off, start counting the break.
             if last_display_state != display_on:
                 break_time = 0
@@ -144,7 +160,7 @@ def sensor_loop(timeout, display, table, bulb):
                 logger.debug(f"break time now {break_time} seconds")
                 if break_time > break_duration:
                     logger.info(
-                        f"Had a break for more than {break_time} seconds, "
+                        f"Had a break for more than {time_delta_fmt(break_time)}, "
                         f"resetting display/table duration time"
                     )
                     display_contig_duration = 0
@@ -155,12 +171,12 @@ def sensor_loop(timeout, display, table, bulb):
             if display_on:
                 table_time = table_time + delta
                 logger.debug(
-                    f"table maintained the position for {table_time} "
-                    f"while working for {display_contig_duration}"
+                    f"table maintained the position for {time_delta_fmt(table_time)} "
+                    f"while working for {time_delta_fmt(display_contig_duration)}"
                 )
                 if table_time > table_state_max:
                     logger.info(
-                        f"table spent more than {table_state_max} in current position"
+                        f"table spent more than {time_delta_fmt(table_state_max)} in current position"
                     )
                     bulb.blink("yellow")
         else:
