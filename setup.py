@@ -12,6 +12,7 @@ setup(
         "adafruit-circuitpython-us100",
         "prometheus-client",
         "PyP100",
+        "requests",
     ],
     entry_points={"console_scripts": ["workmon = workmon.workmon:run_main"]},
     tests_require=[
