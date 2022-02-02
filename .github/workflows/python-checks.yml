@@ -3,7 +3,7 @@ name: Python checks
 on:
   push:
     paths:
-      - "**.py"
+      - "**/*.py"
       - .github/workflows/python-checks.yml
       - pylintrc
 
