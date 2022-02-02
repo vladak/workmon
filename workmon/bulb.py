@@ -4,6 +4,7 @@ Wrapper class for controlling Adafruit USB light bulb.
 
 import logging
 import os
+import time
 
 import serial
 
@@ -73,12 +74,14 @@ class Bulb:
         self.cleanup()
         self.bulb_serial.close()
 
-    def blink(self, color):
+    def blink(self, color, timeout=10):
         """
         blink with given color
         """
         self.logger.debug(f"blinking with {color}")
         self._send_command(self.blink_cmds.get(color.lower()))
+        time.sleep(timeout)
+        self.off(color)
 
     # pylint: disable=invalid-name
     def on(self, color):
