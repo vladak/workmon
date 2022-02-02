@@ -3,7 +3,6 @@
 Monitor table position and display on/off state.
 """
 
-import argparse
 import logging
 import os
 import sys
@@ -14,7 +13,7 @@ from prometheus_client import Gauge, start_http_server
 
 from bulb import Bulb
 from display import Display, DisplayException
-from logutil import LogLevelAction
+from parserutil import parse_args
 from table import Table
 
 
@@ -56,8 +55,29 @@ def get_tty_usb(id_to_match):
     return None
 
 
+# pylint: disable=too-few-public-methods
+class Maximums:
+    """
+    for passing tunables around
+    """
+
+    def __init__(
+        self, display_contig_max, display_daily_max, break_duration, table_state_max
+    ):
+        """
+        :param display_contig_max
+        :param display_daily_max
+        :param break_duration
+        :param table_state_max
+        """
+        self.display_contig_max = display_contig_max
+        self.display_daily_max = display_daily_max
+        self.break_duration = break_duration
+        self.table_state_max = table_state_max
+
+
 # pylint: disable=too-many-locals,too-many-branches,too-many-statements
-def sensor_loop(timeout, display, table, bulb):
+def sensor_loop(timeout, display, table, bulb, maximums):
     """
     Acquire data from the sensors.
     """
@@ -71,21 +91,10 @@ def sensor_loop(timeout, display, table, bulb):
         display_gauge: Gauge("display_status", "Display status"),
     }
 
-    # Maximum time without a break (in seconds)
-    # TODO: make this tunable
-    display_contig_max = 3600
-
-    # recommended work duration (in seconds)
-    # TODO: make this configurable
-    display_daily_max = 3600 * 7
-
-    # the minimal duration of not working that is considered a break time (in seconds)
-    # TODO: make this configurable
-    break_duration = 5 * 60
-
-    # maximum time the table should be in single position while working (in seconds)
-    # TODO: make this configurable
-    table_state_max = 20 * 60
+    display_contig_max = maximums.display_contig_max
+    display_daily_max = maximums.display_daily_max
+    break_duration = maximums.break_duration
+    table_state_max = maximums.table_state_max
 
     last_table_state = None
     last_display_state = None
@@ -116,7 +125,9 @@ def sensor_loop(timeout, display, table, bulb):
 
         date_now = datetime.now()
         # TODO: assumes normal life, make this tunable
-        if date_now.hour == 6:  # TODO: this assumes the sleep timeout is less than one hour
+        if (
+            date_now.hour == 6
+        ):  # TODO: this assumes the sleep timeout is less than one hour
             logger.debug("New work day is starting")
             display_daily_duration = 0
             table_time = 0
@@ -151,7 +162,9 @@ def sensor_loop(timeout, display, table, bulb):
                 # TODO: this should perhaps occur only couple of times
                 bulb.blink("green")
         else:
-            logger.debug(f"display off (after {time_delta_fmt(display_contig_duration)})")
+            logger.debug(
+                f"display off (after {time_delta_fmt(display_contig_duration)})"
+            )
             # Display changed state on -> off, start counting the break.
             if last_display_state != display_on:
                 break_time = 0
@@ -195,46 +208,7 @@ def main():
     """
     Main program
     """
-    parser = argparse.ArgumentParser(
-        description="work habits monitoring",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "-p",
-        "--port",
-        default=8111,
-        type=int,
-        help="port to listen on for HTTP requests",
-    )
-    parser.add_argument(
-        "-s",
-        "--sleep",
-        default=5,
-        type=int,
-        help="sleep duration between iterations in seconds",
-    )
-    parser.add_argument(
-        "--height", default=120, type=int, help="table height threshold"
-    )
-    parser.add_argument(
-        "-W",
-        "--wattage",
-        default=70,  # Samsung 24" display takes ~74W when on.
-        type=int,
-        help="wattage threshold for detecting whether display is on/off",
-    )
-    parser.add_argument(
-        "--hostname", required=True,
-        help="hostname (IP address) for the TP-link smart plug"
-    )
-    parser.add_argument(
-        "-l",
-        "--loglevel",
-        action=LogLevelAction,
-        help='Set log level (e.g. "ERROR")',
-        default=logging.INFO,
-    )
-    args = parser.parse_args()
+    args = parse_args()
 
     logging.basicConfig()
     logger = logging.getLogger(__name__)
@@ -253,13 +227,20 @@ def main():
     logger.info(f"Starting HTTP server on port {args.port}")
     start_http_server(args.port)
 
+    maximums = Maximums(
+        args.display_contig_max,
+        args.display_daily_max,
+        args.break_duration,
+        args.table_state_max,
+    )
+
     try:
         display = Display(args.hostname, username, password, args.wattage)
         with Table(
             get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height
         ) as table:
             with Bulb(get_tty_usb("1a86")) as bulb:
-                sensor_loop(args.sleep, display, table, bulb)
+                sensor_loop(args.sleep, display, table, bulb, maximums)
     except DisplayException as exc:
         logger.error(f"failed to open the display: {exc}")
         sys.exit(1)
