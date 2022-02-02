@@ -260,6 +260,9 @@ def main():
 
 
 def run_main():
+    """
+    this is the main entry point
+    """
     try:
         main()
     except KeyboardInterrupt:
