@@ -1,3 +1,7 @@
+"""
+argument parsing
+"""
+
 import argparse
 import logging
 
@@ -5,6 +9,10 @@ from .logutil import LogLevelAction
 
 
 def parse_args():
+    """
+    parse command line arguments
+    :return args
+    """
     parser = argparse.ArgumentParser(
         description="work habits monitoring",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
