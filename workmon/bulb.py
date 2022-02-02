@@ -75,13 +75,21 @@ class Bulb:
                 blink_task = blink_queue.get(timeout=3)
             except queue.Empty:
                 continue
+
             self._blink(blink_task)
+            blink_queue.task_done()
+
+        # Drain the queue.
+        self.logger.debug("draining the queue")
+        while not blink_queue.empty():
+            blink_queue.get_nowait()
             blink_queue.task_done()
 
     def cleanup(self):
         """
         Turn all the diodes off.
         """
+        self.logger.debug("turning all colors off")
         self._send_command(self.RED_OFF)
         self._send_command(self.YELLOW_OFF)
         self._send_command(self.GREEN_OFF)
@@ -105,15 +113,8 @@ class Bulb:
         Turn all the diodes off, close the serial line and terminate the thread.
         """
 
-        #
-        # This assumes non frequent additions to the queue - it will wait for the queue to drain
-        # and only after that it will set the stop event. If this was the other way round,
-        # consecutive blink tasks will cause the close() to hang in join().
-        # The _process_queue() could possibly mark the outstanding tasks as done after
-        # receiving the stop event.
-        #
-        self.blink_queue.join()
         self.stop_event.set()
+        self.blink_queue.join()
 
         self.cleanup()
         self.bulb_serial.close()
