@@ -109,6 +109,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
     table_time = 0
     blinked_end_of_day = False
     blinked_table = False
+    blinked_display = False
 
     #
     # Infinite loop to sample data from the sensors.
@@ -134,6 +135,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
             break_time = 0
             blinked_end_of_day = False
             blinked_table = False
+            blinked_display = False
 
         # Check work duration and breaks.
         if display_on:
@@ -146,9 +148,11 @@ def sensor_loop(timeout, display, table, bulb, maximums):
             if display_contig_duration > display_contig_max:
                 logger.info(
                     f"spent {time_delta_fmt(display_contig_duration)} "
-                    f"(more then {time_delta_fmt(display_contig_max)}) with display on"
+                    f"with display on (more then {time_delta_fmt(display_contig_max)})"
                 )
-                bulb.blink("red")
+                if not blinked_display:
+                    bulb.blink("red")
+                    blinked_display = True
 
             display_daily_duration = display_daily_duration + delta
             logger.debug(
@@ -179,6 +183,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                     )
                     display_contig_duration = 0
                     table_time = 0
+                    blinked_display = False
 
         # Now check the table.
         if last_table_state == table_state:
