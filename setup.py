@@ -13,7 +13,7 @@ setup(
         "prometheus-client",
         "PyP100",
     ],
-    entry_points={"console_scripts": ["workmon = workmon.workmon:main"]},
+    entry_points={"console_scripts": ["workmon = workmon.workmon:run_main"]},
     tests_require=[
         "pytest",
         "pytest-cov",
