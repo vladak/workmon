@@ -122,14 +122,10 @@ def sensor_loop(timeout, display, table, bulb, maximums):
         gauges[display_gauge].set(int(display_on))
 
         # How much time in seconds has elapsed since the last loop iteration.
-        # TODO: for now run with this estimate
         delta = timeout
 
         date_now = datetime.now()
-        # TODO: assumes normal life, make this tunable
-        if (
-            date_now.hour == 6
-        ):  # TODO: this assumes the sleep timeout is less than one hour
+        if date_now.hour == 6:
             logger.debug("New work day is starting")
             display_daily_duration = 0
             table_time = 0
