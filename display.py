@@ -42,7 +42,7 @@ class Display:
 
         try:
             energy_usage_dict = self.p110.getEnergyUsage()
-        except requests.exceptions.ConnectionError as exc:
+        except (requests.exceptions.ConnectionError, OSError) as exc:
             self.logger.error(f"cannot determine the state of the display: {exc}")
             return None
 

@@ -246,7 +246,7 @@ def main():
         logger.error(f"failed to open the display: {exc}")
         sys.exit(1)
     except OSError as exc:
-        logger.error(f"{exc}")
+        logger.error(f"OS error: {exc}")
         sys.exit(1)
 
 
