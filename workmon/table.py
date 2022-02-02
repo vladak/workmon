@@ -2,6 +2,7 @@
 wrapper class for US-100 Adafruit sensor to detect table position
 """
 
+import logging
 import os
 
 import adafruit_us100
@@ -24,6 +25,8 @@ class Table:
         self.uart = None
         self.us100 = None
 
+        self.logger = logging.getLogger(__name__)
+
     def __enter__(self):
         self.uart = serial.Serial(
             self.serial_device_path, baudrate=self.baud_rate, timeout=1
@@ -39,7 +42,9 @@ class Table:
         """
         is the table up ?
         """
-        return self.us100.distance > self.height_threshold
+        distance = self.us100.distance
+        self.logger.debug(f"table distance = {distance}")
+        return distance > self.height_threshold
 
     def is_down(self):
         """
