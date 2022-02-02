@@ -41,6 +41,7 @@ class Bulb:
         """
         wrapper class for blink task
         """
+
         def __init__(self, color, timeout):
             self.color = color
             self.timeout = timeout
