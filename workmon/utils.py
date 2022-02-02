@@ -41,4 +41,3 @@ def get_tty_usb(id_to_match):
             )
 
     return None
-
