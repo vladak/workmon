@@ -212,7 +212,7 @@ def main():
     args = parse_args()
 
     logging.basicConfig()
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger(__package__)
     logger.setLevel(args.loglevel)
     logger.info("Running")
 
