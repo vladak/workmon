@@ -106,6 +106,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
     break_time = 0
     # the duration for which the table has been in the last position (in seconds)
     table_time = 0
+    blinked_end_of_day = False
 
     #
     # Infinite loop to sample data from the sensors.
@@ -133,6 +134,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
             display_daily_duration = 0
             table_time = 0
             break_time = 0
+            blinked_end_of_day = False
 
         # Check work duration and breaks.
         if display_on:
@@ -153,13 +155,13 @@ def sensor_loop(timeout, display, table, bulb, maximums):
             logger.debug(
                 f"daily display duration now {time_delta_fmt(display_daily_duration)}"
             )
-            if display_daily_duration > display_daily_max:
+            if display_daily_duration > display_daily_max and not blinked_end_of_day:
                 logger.info(
                     f"daily display duration {time_delta_fmt(display_daily_duration)} "
                     f"over {time_delta_fmt(display_daily_max)}"
                 )
-                # TODO: this should perhaps occur only couple of times
                 bulb.blink("green")
+                blinked_end_of_day = True
         else:
             logger.debug(
                 f"display off (after {time_delta_fmt(display_contig_duration)})"
