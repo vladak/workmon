@@ -4,6 +4,8 @@ Wrapper class for controlling Adafruit USB light bulb.
 
 import logging
 import os
+import queue
+import threading
 import time
 
 import serial
@@ -34,6 +36,15 @@ class Bulb:
     off_cmds = {RED: RED_OFF, GREEN: GREEN_OFF, YELLOW: YELLOW_OFF}
     blink_cmds = {RED: RED_BLINK, GREEN: GREEN_BLINK, YELLOW: YELLOW_BLINK}
 
+    # pylint: disable=too-few-public-methods
+    class BlinkTask:
+        """
+        wrapper class for blink task
+        """
+        def __init__(self, color, timeout):
+            self.color = color
+            self.timeout = timeout
+
     def __init__(self, serial_device_path, baud_rate=9600):
         if not os.path.exists(serial_device_path):
             raise OSError(f"not a valid path: {serial_device_path}")
@@ -44,6 +55,24 @@ class Bulb:
         self.bulb_serial = None
 
         self.logger = logging.getLogger(__name__)
+
+        self.blink_queue = queue.Queue()
+        self.stop_event = threading.Event()
+        self.thread = threading.Thread(
+            target=self._process_queue,
+            args=(self.blink_queue, self.stop_event),
+            daemon=True,
+        )
+        self.thread.start()
+
+    def _process_queue(self, blink_queue, stop_event):
+        """
+        Process the queue of blink tasks until the stop event is set.
+        """
+        while not stop_event.is_set():
+            blink_task = blink_queue.get(timeout=3)
+            self._blink(blink_task)
+            blink_queue.task_done()
 
     def cleanup(self):
         """
@@ -69,19 +98,38 @@ class Bulb:
 
     def close(self):
         """
-        Turn all the diodes off and close the serial line.
+        Turn all the diodes off, close the serial line and terminate the thread.
         """
+
+        #
+        # This assumes non frequent additions to the queue - it will wait for the queue to drain
+        # and only after that it will set the stop event. If this was the other way round,
+        # consecutive blink tasks will cause the close() to hang in join().
+        # The _process_queue() could possibly mark the outstanding tasks as done after
+        # receiving the stop event.
+        #
+        self.blink_queue.join()
+        self.stop_event.set()
+
         self.cleanup()
         self.bulb_serial.close()
 
     def blink(self, color, timeout=10):
         """
-        blink with given color
+        add a task to blink with given color for given time
         """
-        self.logger.debug(f"blinking with {color}")
-        self._send_command(self.blink_cmds.get(color.lower()))
-        time.sleep(timeout)
-        self.off(color)
+        self.blink_queue.put(self.BlinkTask(color, timeout))
+
+    def _blink(self, blink_task):
+        """
+        perform the actual blinking
+        """
+        self.logger.debug(
+            f"blinking with {blink_task.color} for {blink_task.timeout} seconds"
+        )
+        self._send_command(self.blink_cmds.get(blink_task.color.lower()))
+        time.sleep(blink_task.timeout)
+        self.off(blink_task.color)
 
     # pylint: disable=invalid-name
     def on(self, color):
