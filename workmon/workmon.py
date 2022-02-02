@@ -98,6 +98,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
 
     last_table_state = None
     last_display_state = None
+
     # the last duration for which the display was on (in seconds)
     display_contig_duration = 0
     # total in the display was on during the day (in seconds)
@@ -107,6 +108,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
     # the duration for which the table has been in the last position (in seconds)
     table_time = 0
     blinked_end_of_day = False
+    blinked_table = False
 
     #
     # Infinite loop to sample data from the sensors.
@@ -131,6 +133,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
             table_time = 0
             break_time = 0
             blinked_end_of_day = False
+            blinked_table = False
 
         # Check work duration and breaks.
         if display_on:
@@ -151,13 +154,14 @@ def sensor_loop(timeout, display, table, bulb, maximums):
             logger.debug(
                 f"daily display duration now {time_delta_fmt(display_daily_duration)}"
             )
-            if display_daily_duration > display_daily_max and not blinked_end_of_day:
+            if display_daily_duration > display_daily_max:
                 logger.info(
                     f"daily display duration {time_delta_fmt(display_daily_duration)} "
                     f"over {time_delta_fmt(display_daily_max)}"
                 )
-                bulb.blink("green")
-                blinked_end_of_day = True
+                if not blinked_end_of_day:
+                    bulb.blink("green")
+                    blinked_end_of_day = True
         else:
             logger.debug(
                 f"display off (after {time_delta_fmt(display_contig_duration)})"
@@ -189,12 +193,15 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                         f"table spent more than {time_delta_fmt(table_state_max)} "
                         f"in current position"
                     )
-                    bulb.blink("yellow")
+                    if not blinked_table:
+                        bulb.blink("yellow")
+                        blinked_table = True
         else:
             logger.debug(
                 f"table changed the position from {last_table_state} to {table_state}"
             )
             table_time = 0
+            blinked_table = False
 
         last_table_state = table_state
         last_display_state = display_on
