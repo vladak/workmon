@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from logutil import LogLevelAction
+from .logutil import LogLevelAction
 
 
 def parse_args():

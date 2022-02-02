@@ -69,7 +69,7 @@ python3 -m venv env
 . ./env/bin/activate
 # workaround for RPi.GPIO install: https://raspberrypi.stackexchange.com/a/135463
 export CFLAGS=-fcommon
-pip install -r requirements.txt
+python setup.py install
 ```
 - configure the service: create `/srv/workmon/environment` file and setup these environment variables inside:
   - `USERNAME`: TP-link username

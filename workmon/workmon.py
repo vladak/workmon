@@ -11,10 +11,10 @@ from datetime import datetime
 
 from prometheus_client import Gauge, start_http_server
 
-from bulb import Bulb
-from display import Display, DisplayException
-from parserutil import parse_args
-from table import Table
+from .bulb import Bulb
+from .display import Display, DisplayException
+from .parserutil import parse_args
+from .table import Table
 
 
 def time_delta_fmt(seconds):
