@@ -241,9 +241,6 @@ def main():
     logger.setLevel(args.loglevel)
     logger.info("Running")
 
-    logger.info(f"Starting HTTP server on port {args.port}")
-    start_http_server(args.port)
-
     username = os.environ.get("USERNAME")
     if not username:
         logger.error("The USERNAME environment variable is required")
@@ -252,6 +249,9 @@ def main():
     if not password:
         logger.error("The PASSWORD environment variable is required")
         sys.exit(1)
+
+    logger.info(f"Starting HTTP server on port {args.port}")
+    start_http_server(args.port)
 
     try:
         display = Display(args.hostname, username, password, args.wattage)
