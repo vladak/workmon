@@ -2,3 +2,4 @@ pyserial
 adafruit-circuitpython-us100
 prometheus-client
 PyP100
+requests
