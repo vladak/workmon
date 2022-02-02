@@ -190,7 +190,8 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                 )
                 if table_time > table_state_max:
                     logger.info(
-                        f"table spent more than {time_delta_fmt(table_state_max)} in current position"
+                        f"table spent more than {time_delta_fmt(table_state_max)} "
+                        f"in current position"
                     )
                     bulb.blink("yellow")
         else:
