@@ -27,16 +27,16 @@ jobs:
       - name: Run flake8
         run: |
           pip install flake8
-          flake8 --ignore=E501 **.py
+          flake8 --ignore=E501 **/*.py
       - name: Run pylint
         run: |
           pip install pylint
-          pylint **.py
+          pylint **/*.py
       - name: Run black in check mode
         run: |
           pip install black
-          black --check **.py
+          black --check **/*.py
       - name: Run isort in check mode
         run: |
           pip install isort
-          isort **.py  --check --diff
+          isort **/*.py  --check --diff
