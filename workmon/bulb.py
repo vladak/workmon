@@ -71,7 +71,10 @@ class Bulb:
         Process the queue of blink tasks until the stop event is set.
         """
         while not stop_event.is_set():
-            blink_task = blink_queue.get(timeout=3)
+            try:
+                blink_task = blink_queue.get(timeout=3)
+            except queue.Empty:
+                continue
             self._blink(blink_task)
             blink_queue.task_done()
 
