@@ -85,6 +85,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
         display_on = display.is_on()
         if display_on is None:
             gauges[display_gauge].set("NaN")
+            time.sleep(timeout)
             continue
         gauges[display_gauge].set(int(display_on))
 
