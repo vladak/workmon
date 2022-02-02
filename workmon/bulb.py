@@ -73,7 +73,6 @@ class Bulb:
         self.cleanup()
         self.bulb_serial.close()
 
-    # TODO: add variant with timeout
     def blink(self, color):
         """
         blink with given color
@@ -81,7 +80,6 @@ class Bulb:
         self.logger.debug(f"blinking with {color}")
         self._send_command(self.blink_cmds.get(color.lower()))
 
-    # TODO: add variant with timeout
     # pylint: disable=invalid-name
     def on(self, color):
         """
