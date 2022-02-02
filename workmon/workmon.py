@@ -147,7 +147,6 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                     f"spent {time_delta_fmt(display_contig_duration)} "
                     f"(more then {time_delta_fmt(display_contig_max)}) with display on"
                 )
-                # TODO: make this configurable
                 bulb.blink("red")
 
             display_daily_duration = display_daily_duration + delta
@@ -159,7 +158,6 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                     f"daily display duration {time_delta_fmt(display_daily_duration)} "
                     f"over {time_delta_fmt(display_daily_max)}"
                 )
-                # TODO: make this configurable
                 # TODO: this should perhaps occur only couple of times
                 bulb.blink("green")
         else:
