@@ -116,7 +116,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
             if display_contig_duration > display_contig_max:
                 logger.info(
                     f"spent {time_delta_fmt(display_contig_duration)} "
-                    f"with display on (more then {time_delta_fmt(display_contig_max)})"
+                    f"with display on (more than {time_delta_fmt(display_contig_max)})"
                 )
                 if not blinked_display:
                     bulb.blink("red")
@@ -147,7 +147,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                 if break_time > break_duration:
                     logger.info(
                         f"Had a break for {time_delta_fmt(break_time)}, "
-                        f"(more than {break_duration}),"
+                        f"(more than {time_delta_fmt(break_duration)}),"
                         f" resetting display/table duration time"
                     )
                     display_contig_duration = 0
@@ -165,7 +165,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                 if table_time > table_state_max:
                     logger.info(
                         f"table spent more than {time_delta_fmt(table_state_max)} "
-                        f"in current position"
+                        f"in current position, blinking is in order"
                     )
                     if not blinked_table:
                         bulb.blink("yellow")
