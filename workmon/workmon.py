@@ -143,8 +143,9 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                 logger.debug(f"break time now {time_delta_fmt(break_time)}")
                 if break_time > break_duration:
                     logger.info(
-                        f"Had a break for more than {time_delta_fmt(break_time)}, "
-                        f"resetting display/table duration time"
+                        f"Had a break for {time_delta_fmt(break_time)}, "
+                        f"(more than {break_duration}),"
+                        f" resetting display/table duration time"
                     )
                     display_contig_duration = 0
                     table_time = 0
