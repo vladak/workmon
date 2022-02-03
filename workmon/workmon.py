@@ -43,7 +43,11 @@ class Workmon:
 
     def __init__(self, timeout, display, table, bulb, maximums):
         """
-        :param
+        :param timeout
+        :param display
+        :param table
+        :param bulb
+        :param maximums
         """
         self.timeout = timeout
         self.display = display
