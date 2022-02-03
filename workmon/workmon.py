@@ -93,7 +93,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
         # How much time in seconds has elapsed since the last loop iteration.
         delta = int(time.monotonic() - last_time)
         last_time = time.monotonic()
-        logger.debug(f"time delta = {delta}")
+        logger.debug(f"time delta = {time_delta_fmt(delta)}")
 
         date_now = datetime.now()
         if date_now.hour == 6:
