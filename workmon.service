@@ -2,12 +2,12 @@
 Description=Work monitoring Service
 
 [Service]
-User=root
-Group=root
+User=pi
+Group=pi
 Type=simple
 WorkingDirectory=/srv/workmon
 EnvironmentFile=/srv/workmon/environment
-ExecStart=su -c "/srv/workmon/env/bin/python3 /srv/workmon/workmon.py $ARGS" - pi
+ExecStart=/srv/workmon/env/bin/workmon $ARGS
 ExecStop=/bin/kill -2 $MAINPID
 TimeoutStartSec=0
 Restart=always
