@@ -74,6 +74,7 @@ def sensor_loop(timeout, display, table, bulb, maximums):
     blinked_table = False
     blinked_display = False
 
+    last_time = time.monotonic()
     #
     # Infinite loop to sample data from the sensors.
     #
@@ -90,7 +91,9 @@ def sensor_loop(timeout, display, table, bulb, maximums):
         gauges[display_gauge].set(int(display_on))
 
         # How much time in seconds has elapsed since the last loop iteration.
-        delta = timeout
+        delta = int(time.monotonic() - last_time)
+        last_time = time.monotonic()
+        logger.debug(f"time delta = {delta}")
 
         date_now = datetime.now()
         if date_now.hour == 6:
