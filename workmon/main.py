@@ -44,6 +44,7 @@ def main():
         args.display_daily_max,
         args.break_duration,
         args.table_state_max,
+        args.sleep,
     )
 
     try:
@@ -52,7 +53,7 @@ def main():
             get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height
         ) as table:
             with Bulb(get_tty_usb("1a86")) as bulb:
-                workmon = Workmon(args.sleep, display, table, bulb, maximums)
+                workmon = Workmon(display, table, bulb, maximums)
                 workmon.sensor_loop()
     except DisplayException as exc:
         logger.error(f"failed to open the display: {exc}")

@@ -19,18 +19,20 @@ class Maximums:
     """
 
     def __init__(
-        self, display_contig_max, display_daily_max, break_duration, table_state_max
+        self, display_contig_max, display_daily_max, break_duration, table_state_max, timeout
     ):
         """
         :param display_contig_max
         :param display_daily_max
         :param break_duration
         :param table_state_max
+        :param timeout
         """
         self.display_contig_max = display_contig_max
         self.display_daily_max = display_daily_max
         self.break_duration = break_duration
         self.table_state_max = table_state_max
+        self.timeout = timeout
 
 
 class Workmon:
@@ -41,15 +43,13 @@ class Workmon:
     table_gauge = "table"
     display_gauge = "display"
 
-    def __init__(self, timeout, display, table, bulb, maximums):
+    def __init__(self, display, table, bulb, maximums):
         """
-        :param timeout
         :param display
         :param table
         :param bulb
         :param maximums
         """
-        self.timeout = timeout
         self.display = display
         self.table = table
         self.bulb = bulb
@@ -207,4 +207,4 @@ class Workmon:
             last_table_state = table_state
             last_display_state = display_on
 
-            time.sleep(self.timeout)
+            time.sleep(self.maximums.timeout)
