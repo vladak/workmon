@@ -20,7 +20,12 @@ class Maximums:
 
     # pylint: disable=too-many-arguments
     def __init__(
-        self, display_contig_max, display_daily_max, break_duration, table_state_max, timeout
+        self,
+        display_contig_max,
+        display_daily_max,
+        break_duration,
+        table_state_max,
+        timeout,
     ):
         """
         :param display_contig_max
