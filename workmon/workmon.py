@@ -136,7 +136,8 @@ def sensor_loop(timeout, display, table, bulb, maximums):
                     blinked_end_of_day = True
         else:
             logger.debug(
-                f"display off (after {time_delta_fmt(display_contig_duration)})"
+                f"display off (after being on for "
+                f"{time_delta_fmt(display_contig_duration)})"
             )
             # Display changed state on -> off, start counting the break.
             if last_display_state != display_on:
