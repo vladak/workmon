@@ -14,7 +14,7 @@ setup(
         "PyP100",
         "requests",
     ],
-    entry_points={"console_scripts": ["workmon = workmon.workmon:run_main"]},
+    entry_points={"console_scripts": ["workmon = workmon.main:run_main"]},
     tests_require=[
         "pytest",
         "pytest-cov",
