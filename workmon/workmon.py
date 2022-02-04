@@ -49,17 +49,19 @@ class Workmon:
     table_gauge = "table"
     display_gauge = "display"
 
-    def __init__(self, display, table, bulb, maximums):
+    def __init__(self, display, table, bulb, maximums, mqtt):
         """
         :param display
         :param table
         :param bulb
         :param maximums
+        :param mqtt Mqtt object
         """
         self.display = display
         self.table = table
         self.bulb = bulb
         self.maximums = maximums
+        self.mqtt = mqtt
 
         self.gauges = {
             self.table_gauge: Gauge("table_position", "Table position"),
@@ -83,6 +85,15 @@ class Workmon:
             self.gauges[self.display_gauge].set(int(display_on))
 
         return table_state, display_on
+
+    def blink(self, color):
+        """
+        blink the bulb with given color
+        will also publish MQTT message
+        """
+        self.bulb.blink(color)
+        if self.mqtt:
+            self.mqtt.publish(color)
 
     # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     def sensor_loop(self):
@@ -151,7 +162,7 @@ class Workmon:
                         f"with display on (more than {time_delta_fmt(display_contig_max)})"
                     )
                     if not blinked_display:
-                        self.bulb.blink("red")
+                        self.blink("red")
                         blinked_display = True
 
                 display_daily_duration = display_daily_duration + delta
@@ -164,7 +175,7 @@ class Workmon:
                         f"over {time_delta_fmt(display_daily_max)}"
                     )
                     if not blinked_end_of_day:
-                        self.bulb.blink("green")
+                        self.blink("green")
                         blinked_end_of_day = True
             else:
                 logger.debug(
@@ -201,7 +212,7 @@ class Workmon:
                             f"in current position, blinking is in order"
                         )
                         if not blinked_table:
-                            self.bulb.blink("yellow")
+                            self.blink("yellow")
                             blinked_table = True
             else:
                 logger.debug(

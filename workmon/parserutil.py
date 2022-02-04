@@ -77,5 +77,19 @@ def parse_args():
         default=20 * 60,
         help="maximum time the table should be in single position while working (in seconds)",
     )
+    parser.add_argument(
+        "-t",
+        "--topic",
+        help="MQTT topic to send blink events to",
+    )
+    parser.add_argument(
+        "--mqtt_hostname",
+        help="hostname of the MQTT broker",
+    )
+    parser.add_argument(
+        "--mqtt_port",
+        type=int,
+        help="port of the MQTT broker",
+    )
 
     return parser.parse_args()

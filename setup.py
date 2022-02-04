@@ -13,6 +13,7 @@ setup(
         "prometheus-client",
         "PyP100",
         "requests",
+        "paho-mqtt",
     ],
     entry_points={"console_scripts": ["workmon = workmon.main:run_main"]},
     tests_require=[

@@ -50,7 +50,10 @@ add this section under `scrape_configs` in `/etc/prometheus/prometheus.yml`:
 
 ### Grafana
 
-TBD dashboard provisioning
+Perform the following setup on the **Grafana server**:
+
+- TBD: dashboard provisioning
+- Set up the service to publish annotations using the instructions on https://github.com/vladak/mq2anno
 
 ## Install
 
