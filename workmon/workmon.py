@@ -73,6 +73,22 @@ class Workmon:
             self.display_gauge: Gauge("display_status", "Display status"),
         }
 
+        self.rgb()
+
+    def rgb(self):
+        """
+        Signal that work monitoring is ready.
+        """
+        self.bulb.on("red")
+        time.sleep(1)
+        self.bulb.off("red")
+        self.bulb.on("yellow")
+        time.sleep(1)
+        self.bulb.off("yellow")
+        self.bulb.on("green")
+        time.sleep(1)
+        self.bulb.off("green")
+
     def get_sensor_values(self):
         """
         :return tuple of table position and display state
