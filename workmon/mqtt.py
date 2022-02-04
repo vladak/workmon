@@ -15,6 +15,9 @@ class MqttFatal(Exception):
 
 
 class Mqtt:
+    """
+    MQTT wrapper
+    """
     def __init__(self, hostname, port, topic):
         self.topic = topic
 

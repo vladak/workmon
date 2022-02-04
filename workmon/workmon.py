@@ -49,6 +49,7 @@ class Workmon:
     table_gauge = "table"
     display_gauge = "display"
 
+    # pylint: disable=too-many-arguments
     def __init__(self, display, table, bulb, maximums, mqtt):
         """
         :param display
