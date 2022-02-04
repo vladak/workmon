@@ -64,6 +64,10 @@ class Workmon:
         self.maximums = maximums
         self.mqtt = mqtt
 
+        logger = logging.getLogger(__name__)
+        if self.mqtt:
+            logger.info("will use MQTT to send blink events")
+
         self.gauges = {
             self.table_gauge: Gauge("table_position", "Table position"),
             self.display_gauge: Gauge("display_status", "Display status"),

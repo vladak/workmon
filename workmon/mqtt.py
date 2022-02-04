@@ -54,7 +54,7 @@ class Mqtt:
         if ret_code == 0:
             logger.info("Connected to MQTT broker")
         else:
-            logger.error(f"Connected to MQTT broker failed with code {ret_code}")
+            logger.error(f"Connect to MQTT broker failed with code {ret_code}")
             raise MqttFatal("cannot connect to MQTT broker")
 
     def publish(self, msg):
