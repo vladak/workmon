@@ -37,13 +37,23 @@ class Bulb:
     blink_cmds = {RED: RED_BLINK, GREEN: GREEN_BLINK, YELLOW: YELLOW_BLINK}
 
     # pylint: disable=too-few-public-methods
-    class BlinkTask:
+    class BulbTask:
         """
-        wrapper class for blink task
+        wrapper class for bulb action (blink/on)
         """
 
-        def __init__(self, color, timeout):
+        BLINK = "blink"
+        ON = "on"
+
+        def __init__(self, color, action, timeout):
+            """
+            :param action either "blink", "on"
+            """
+            if action not in [self.BLINK, self.ON]:
+                raise Exception("not a valid action")
+
             self.color = color
+            self.action = action
             self.timeout = timeout
 
     def __init__(self, serial_device_path, baud_rate=9600):
@@ -57,11 +67,11 @@ class Bulb:
 
         self.logger = logging.getLogger(__name__)
 
-        self.blink_queue = queue.Queue()
+        self.task_queue = queue.Queue()
         self.stop_event = threading.Event()
         self.thread = threading.Thread(
             target=self._process_queue,
-            args=(self.blink_queue, self.stop_event),
+            args=(self.task_queue, self.stop_event),
             daemon=True,
         )
         self.thread.start()
@@ -72,11 +82,15 @@ class Bulb:
         """
         while not stop_event.is_set():
             try:
-                blink_task = blink_queue.get(timeout=3)
+                bulb_task = blink_queue.get(timeout=3)
             except queue.Empty:
                 continue
 
-            self._blink(blink_task)
+            if bulb_task.action == self.BulbTask.BLINK:
+                self._blink(bulb_task)
+            elif bulb_task.action == self.BulbTask.ON:
+                self._on(bulb_task)
+
             blink_queue.task_done()
 
         # Drain the queue.
@@ -114,7 +128,7 @@ class Bulb:
         """
 
         self.stop_event.set()
-        self.blink_queue.join()
+        self.task_queue.join()
 
         self.cleanup()
         self.bulb_serial.close()
@@ -123,7 +137,7 @@ class Bulb:
         """
         add a task to blink with given color for given time
         """
-        self.blink_queue.put(self.BlinkTask(color, timeout))
+        self.task_queue.put(self.BulbTask(color, self.BulbTask.BLINK, timeout))
 
     def _blink(self, blink_task):
         """
@@ -134,17 +148,23 @@ class Bulb:
         )
         self._send_command(self.blink_cmds.get(blink_task.color.lower()))
         time.sleep(blink_task.timeout)
-        self.off(blink_task.color)
+        self._off(blink_task.color)
 
     # pylint: disable=invalid-name
-    def on(self, color):
+    def on(self, color, timeout=10):
+        self.task_queue.put(self.BulbTask(color, self.BulbTask.ON, timeout))
+
+    # pylint: disable=invalid-name
+    def _on(self, on_task):
         """
         turn on given color
         """
-        self.logger.debug(f"turning {color} on")
-        self._send_command(self.on_cmds.get(color.lower()))
+        self.logger.debug(f"turning {on_task.color} on for {on_task.timeout} seconds")
+        self._send_command(self.on_cmds.get(on_task.color.lower()))
+        time.sleep(on_task.timeout)
+        self._off(on_task.color)
 
-    def off(self, color):
+    def _off(self, color):
         """
         turn off given color
         """

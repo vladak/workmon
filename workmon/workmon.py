@@ -79,15 +79,9 @@ class Workmon:
         """
         Signal that work monitoring is ready.
         """
-        self.bulb.on("red")
-        time.sleep(1)
-        self.bulb.off("red")
-        self.bulb.on("yellow")
-        time.sleep(1)
-        self.bulb.off("yellow")
-        self.bulb.on("green")
-        time.sleep(1)
-        self.bulb.off("green")
+        self.bulb.on("red", 1)
+        self.bulb.on("yellow", 1)
+        self.bulb.on("green", 1)
 
     def get_sensor_values(self):
         """
