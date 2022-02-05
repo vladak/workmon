@@ -152,12 +152,15 @@ class Bulb:
 
     # pylint: disable=invalid-name
     def on(self, color, timeout=10):
+        """
+        add a task to turn given color on for given time
+        """
         self.task_queue.put(self.BulbTask(color, self.BulbTask.ON, timeout))
 
     # pylint: disable=invalid-name
     def _on(self, on_task):
         """
-        turn on given color
+        turn on given color for given time
         """
         self.logger.debug(f"turning {on_task.color} on for {on_task.timeout} seconds")
         self._send_command(self.on_cmds.get(on_task.color.lower()))
