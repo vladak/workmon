@@ -27,6 +27,8 @@ class Table:
 
         self.logger = logging.getLogger(__name__)
 
+        self.logger.debug(f"using table threshold {self.height_threshold}")
+
     def __enter__(self):
         self.uart = serial.Serial(
             self.serial_device_path, baudrate=self.baud_rate, timeout=1
@@ -44,7 +46,8 @@ class Table:
         """
         distance = self.us100.distance
         position = distance > self.height_threshold
-        self.logger.debug(f"table distance = {distance} -> position {position}")
+        position_str = "up" if position else "down"
+        self.logger.debug(f"table distance = {distance} -> position {position_str}")
         return position
 
     def is_down(self):
