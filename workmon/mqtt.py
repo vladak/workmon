@@ -1,5 +1,8 @@
 """
 MQTT publisher
+
+This is used to send messages about bulb blinking so that the events can be displayed
+as Grafana annotations.
 """
 
 import logging
