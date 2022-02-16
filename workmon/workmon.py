@@ -27,6 +27,7 @@ class Maximums:
         break_duration,
         table_state_max,
         timeout,
+        start_of_day,
     ):
         """
         :param display_contig_max
@@ -34,12 +35,14 @@ class Maximums:
         :param break_duration
         :param table_state_max
         :param timeout
+        :param start_of_day
         """
         self.display_contig_max = display_contig_max
         self.display_daily_max = display_daily_max
         self.break_duration = break_duration
         self.table_state_max = table_state_max
         self.timeout = timeout
+        self.start_of_day = start_of_day
 
 
 class Workmon:
@@ -159,7 +162,7 @@ class Workmon:
             logger.debug(f"time delta = {time_delta_fmt(delta)}")
 
             date_now = datetime.now()
-            if date_now.hour == 6:
+            if date_now.hour == maximums.start_of_day:
                 logger.debug("New work day is starting")
                 display_daily_duration = 0
                 table_time = 0

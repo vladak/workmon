@@ -46,6 +46,7 @@ def main():
         args.break_duration,
         args.table_state_max,
         args.sleep,
+        args.start_of_day,
     )
 
     mqtt = None

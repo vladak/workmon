@@ -55,24 +55,28 @@ def parse_args():
         "--display_contig_max",
         type=int,
         default=3600,
+        metavar="SECONDS",
         help="Maximum time without a break (in seconds)",
     )
     parser.add_argument(
         "--display_daily_max",
         type=int,
         default=3600 * 7,
+        metavar="SECONDS",
         help="recommended work duration (in seconds)",
     )
     parser.add_argument(
         "--break_duration",
         type=int,
         default=5 * 60,
+        metavar="SECONDS",
         help="the minimal duration of not working that is considered a break time (in seconds)",
     )
     parser.add_argument(
         "--table_state_max",
         type=int,
         default=20 * 60,
+        metavar="SECONDS",
         help="maximum time the table should be in single position while working (in seconds)",
     )
     parser.add_argument(
@@ -88,6 +92,13 @@ def parse_args():
         "--mqtt_port",
         type=int,
         help="port of the MQTT broker",
+    )
+    parser.add_argument(
+        "--start_of_day",
+        default=6,
+        type=int,
+        metavar="HOUR",
+        help="the hour (24 format) that starts the work day",
     )
 
     return parser.parse_args()
