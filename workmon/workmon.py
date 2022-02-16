@@ -96,6 +96,7 @@ class Workmon:
             self.gauges[self.table_gauge].set(int(table_state))
         except TableException as exc:
             self.logger.error(f"table problem: {exc}")
+            self.gauges[self.table_gauge].set("NaN")
 
         display_on = self.display.is_on()
         if display_on is None:
