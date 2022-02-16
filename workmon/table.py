@@ -43,8 +43,9 @@ class Table:
         is the table up ?
         """
         distance = self.us100.distance
-        self.logger.debug(f"table distance = {distance}")
-        return distance > self.height_threshold
+        position = distance > self.height_threshold
+        self.logger.debug(f"table distance = {distance} -> position {position}")
+        return position
 
     def is_down(self):
         """
