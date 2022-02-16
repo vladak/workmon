@@ -32,7 +32,7 @@ def parse_args():
         help="sleep duration between iterations in seconds",
     )
     parser.add_argument(
-        "--height", default=120, type=int, help="table height threshold"
+        "--height", default=90, type=int, help="table height threshold"
     )
     parser.add_argument(
         "-W",

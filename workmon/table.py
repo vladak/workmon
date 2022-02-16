@@ -14,7 +14,7 @@ class Table:
     provides 1 bit of information w.r.t. given threshold: whether the table is up or down
     """
 
-    def __init__(self, serial_device_path, baud_rate=9600, height_threshold=100):
+    def __init__(self, serial_device_path, baud_rate=9600, height_threshold=90):
         if not os.path.exists(serial_device_path):
             raise OSError(f"not a valid path: {serial_device_path}")
 
