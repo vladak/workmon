@@ -72,6 +72,8 @@ Perform the following setup on the **Grafana server**:
 
 ## Install
 
+Assumes the service will be run under the `pi` user.
+
 - pre-requisites:
 ```
 sudo apt-get install -y python3-venv
@@ -80,6 +82,7 @@ sudo apt-get install -y python3-dev # for RPi.GPIO
 - install:
 ```
 sudo mkdir /srv
+sudo chown pi:pi /srv
 sudo apt-get install -y git
 git clone https://github.com/vladak/workmon /srv/workmon
 cd /srv/workmon
