@@ -35,7 +35,7 @@ My goal is to provide the following functionality:
 
 Here are the parts laid out on the said table:
 ![Parts](/img/parts.jpg)
-I used a [Dremel](https://us.dremel.com/en_US/) tool to carve the holes for the distance sensor and also on the side (not visible here) for the USB cables:
+I used a [Dremel](https://us.dremel.com/en_US/) tool to carve the holes for the distance sensor and also on the side for the USB cables:
 ![Assembled case](/img/assembled.jpg)
 And used double sided sticky tape to mount it underneath the table:
 ![Underneath the table](/img/table.jpg)
