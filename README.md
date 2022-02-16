@@ -46,6 +46,12 @@ And used double sided sticky tape to mount it underneath the table:
 
 Install the Tapo app on a mobile phone. Register new account, remember the user ID and password as these will be necessary.
 
+Setup the plug so that it connects to dedicated (IoT) WiFi network.
+
+### Raspberry Pi
+
+Setup the Pi Zero to connect to the same WiFi network as the plug.
+
 ### Prometheus
 
 add this section under `scrape_configs` in `/etc/prometheus/prometheus.yml`:
