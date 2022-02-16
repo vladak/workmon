@@ -9,6 +9,12 @@ import adafruit_us100
 import serial
 
 
+class TableException(Exception):
+    """
+    wrapper for table exceptions
+    """
+
+
 class Table:
     """
     provides 1 bit of information w.r.t. given threshold: whether the table is up or down
@@ -45,6 +51,9 @@ class Table:
         is the table up ?
         """
         distance = self.us100.distance
+        if distance is None:
+            raise TableException("cannot determine table state")
+
         position = distance > self.height_threshold
         position_str = "up" if position else "down"
         self.logger.debug(f"table distance = {distance} -> position {position_str}")

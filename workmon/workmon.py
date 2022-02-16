@@ -9,6 +9,7 @@ from datetime import datetime
 
 from prometheus_client import Gauge
 
+from .table import TableException
 from .utils import time_delta_fmt
 
 
@@ -64,9 +65,9 @@ class Workmon:
         self.maximums = maximums
         self.mqtt = mqtt
 
-        logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         if self.mqtt:
-            logger.info("will use MQTT to send blink events")
+            self.logger.info("will use MQTT to send blink events")
 
         self.gauges = {
             self.table_gauge: Gauge("table_position", "Table position"),
@@ -88,10 +89,13 @@ class Workmon:
         :return tuple of table position and display state
         """
 
-        table_state = (
-            self.table.is_up()
-        )  # Unlike display, not interested in actual position.
-        self.gauges[self.table_gauge].set(int(table_state))
+        # Unlike display, not interested in actual position.
+        table_state = None
+        try:
+            table_state = self.table.is_up()
+            self.gauges[self.table_gauge].set(int(table_state))
+        except TableException as exc:
+            self.logger.error(f"table problem: {exc}")
 
         display_on = self.display.is_on()
         if display_on is None:
