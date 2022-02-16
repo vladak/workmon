@@ -33,6 +33,13 @@ My goal is to provide the following functionality:
 - old iPhone 5C transparent plastic box (as a housing) with holes drilled for the distance sensor
   - to be mounted underneath the table at the back, on one of the [cable management boxes](https://www.fully.com/en-eu/accessories/wire-management/wiretamer.html) in order not to cause measurement interference with my legs etc.
 
+Here are the parts laid out on the said table:
+![Parts](/img/parts.jpg)
+I used a [Dremel](https://us.dremel.com/en_US/) tool to carve the holes for the distance sensor and also on the side (not visible here) for the USB cables:
+![Assembled case](/img/assembled.jpg)
+And used double sided sticky tape to mount it underneath the table:
+![Underneath the table](/img/table.jpg)
+
 ## Setup
 
 ### TP-link P110
