@@ -31,7 +31,12 @@ def parse_args():
         type=int,
         help="sleep duration between iterations in seconds",
     )
-    parser.add_argument("--height", default=90, type=int, help="table height threshold")
+    parser.add_argument(
+        "--height_up", default=90, type=int, help="table up height threshold"
+    )
+    parser.add_argument(
+        "--height_down", default=60, type=int, help="table down height threshold"
+    )
     parser.add_argument(
         "-W",
         "--wattage",

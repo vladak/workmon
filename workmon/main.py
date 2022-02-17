@@ -59,7 +59,9 @@ def main():
     try:
         display = Display(args.hostname, username, password, args.wattage)
         with Table(
-            get_tty_usb("Silicon_Labs_CP2102"), height_threshold=args.height
+            get_tty_usb("Silicon_Labs_CP2102"),
+            height_up_threshold=args.height_up,
+            height_down_threshold=args.height_down,
         ) as table:
             with Bulb(get_tty_usb("1a86")) as bulb:
                 workmon = Workmon(display, table, bulb, maximums, mqtt)
