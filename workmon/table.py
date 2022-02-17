@@ -48,8 +48,10 @@ class Table:
 
         self.logger = logging.getLogger(__name__)
 
-        self.logger.debug(f"using table thresholds: "
-                          f"{self.height_down_threshold}, {self.height_up_threshold}")
+        self.logger.debug(
+            f"using table thresholds: "
+            f"{self.height_down_threshold}, {self.height_up_threshold}"
+        )
 
     def __enter__(self):
         self.uart = serial.Serial(
