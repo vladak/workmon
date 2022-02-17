@@ -5,6 +5,7 @@ Monitor table position and display on/off state.
 
 import logging
 import time
+from collections import Counter
 from datetime import datetime
 
 from prometheus_client import Gauge
@@ -131,9 +132,11 @@ class Workmon:
         display_daily_max = maximums.display_daily_max
         break_duration = maximums.break_duration
         table_state_max = maximums.table_state_max
+        table_state_items = 6
 
-        last_table_state = None
+        table_states = []
         last_display_state = None
+        last_table_state = None
 
         # the last duration for which the display was on (in seconds)
         display_contig_duration = 0
@@ -221,30 +224,38 @@ class Workmon:
                         table_time = 0
                         blinked_display = False
 
-            # Now check the table.
-            if last_table_state == table_state:
-                if display_on:
-                    table_time = table_time + delta
-                    logger.debug(
-                        f"table maintained the position for {time_delta_fmt(table_time)} "
-                        f"while working for {time_delta_fmt(display_contig_duration)}"
-                    )
-                    if table_time > table_state_max:
-                        logger.info(
-                            f"table spent more than {time_delta_fmt(table_state_max)} "
-                            f"in current position, blinking is in order"
-                        )
-                        if not blinked_table:
-                            self.blink("yellow")
-                            blinked_table = True
-            else:
-                logger.debug(
-                    f"table changed the position from {last_table_state} to {table_state}"
-                )
-                table_time = 0
-                blinked_table = False
+            # Now check the table. Because of table state flapping,
+            # the state is checked against number of past values.
+            if len(table_states) >= table_state_items:
+                table_states.pop(0)
+            table_states.append(table_state)
+            logger.debug(f"table states: {table_states}")
+            if len(table_states) >= table_state_items:
+                major_state, _ = Counter(table_states).most_common(1)[0]
+                logger.debug(f"major table state: {major_state}")
+                if last_table_state is not None:
+                    if major_state == last_table_state:
+                        if display_on:
+                            table_time = table_time + delta
+                            logger.debug(
+                                f"table maintained the position for {time_delta_fmt(table_time)} "
+                                f"while working for {time_delta_fmt(display_contig_duration)}"
+                            )
+                            if table_time > table_state_max:
+                                logger.info(
+                                    f"table spent more than {time_delta_fmt(table_state_max)} "
+                                    f"in current position, blinking is in order"
+                                )
+                                if not blinked_table:
+                                    self.blink("yellow")
+                                    blinked_table = True
+                    else:
+                        logger.debug(f"table changed the position to {major_state}")
+                        table_time = 0
+                        blinked_table = False
 
-            last_table_state = table_state
+                last_table_state = major_state
+
             last_display_state = display_on
 
             time.sleep(self.maximums.timeout)
