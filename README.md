@@ -41,6 +41,8 @@ I used a [Dremel](https://us.dremel.com/en_US/) tool to carve the holes for the 
 and used double sided sticky tape to mount it underneath the table:
 ![Underneath the table](/img/table.jpg)
 
+The LED bulb is attached to the back of my display not to obtrude too much - the reflected light is enough to notice the blinking.
+
 ## Setup
 
 ### TP-link P110
