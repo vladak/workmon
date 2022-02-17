@@ -96,11 +96,14 @@ class Workmon:
         # Unlike display, not interested in actual position.
         table_state = None
         try:
-            table_state = self.table.is_up()
-            self.gauges[self.table_gauge].set(int(table_state))
+            table_state = self.table.get_position()
         except TableException as exc:
             self.logger.error(f"table problem: {exc}")
+
+        if table_state is None:
             self.gauges[self.table_gauge].set("NaN")
+        else:
+            self.gauges[self.table_gauge].set(int(table_state == "up"))
 
         display_on = self.display.is_on()
         if display_on is None:

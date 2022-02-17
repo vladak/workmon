@@ -74,30 +74,20 @@ class Table:
 
         return distance
 
-    def log_position(self, distance, is_up):
+    def get_position(self):
         """
-        log current distance and position
-        """
-        position_str = "up" if is_up else "down"
-        self.logger.debug(f"table distance = {distance} -> position {position_str}")
-
-    def is_up(self):
-        """
-        is the table up ?
+        :return "up" or "down" or None
         """
         distance = self.get_distance()
-        is_up = distance > self.height_up_threshold
-        self.log_position(distance, is_up)
-        return is_up
+        if distance > self.height_up_threshold:
+            position = "up"
+        elif distance < self.height_down_threshold:
+            position = "down"
+        else:
+            position = None
 
-    def is_down(self):
-        """
-        is the table down ?
-        """
-        distance = self.get_distance()
-        is_down = distance < self.height_down_threshold
-        self.log_position(distance, not is_down)
-        return is_down
+        self.logger.debug(f"table distance = {distance} -> position {position}")
+        return position
 
     def close(self):
         """
