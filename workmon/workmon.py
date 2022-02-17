@@ -122,7 +122,7 @@ class Workmon:
         if self.mqtt:
             self.mqtt.publish(color)
 
-    # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+    # pylint: disable=too-many-locals,too-many-branches,too-many-statements,too-many-nested-blocks
     def sensor_loop(self):
         """
         In endless loop acquire data from the sensors, perform signalling.
