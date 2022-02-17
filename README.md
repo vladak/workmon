@@ -27,9 +27,10 @@ My goal is to provide the following functionality:
     - while the presence could be detected in software, I wanted to avoid any changes whatsoever to the software of my company provided laptop. Other metrics such as light emitted by the display would not be as reliable.
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
   - to determine if the table is up/down
+- [USB to TTL Serial Cable](https://www.adafruit.com/product/954) (to connect the distance sensor to the Pi)
 - [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127) (no buzzer)
-- [USB to TTL Serial Cable](https://www.adafruit.com/product/954) (for the distance sensor)
 - [Waveshare 4 Port USB HUB HAT](https://www.waveshare.com/usb-hub-hat.htm)
+  - to connect the bulb and the distance sensor to the Pi 
 - old iPhone 5C transparent plastic box (as a housing) with holes drilled for the distance sensor
   - to be mounted underneath the table at the back, on one of the [cable management boxes](https://www.fully.com/en-eu/accessories/wire-management/wiretamer.html) in order not to cause measurement interference with my legs etc.
 
