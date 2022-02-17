@@ -71,6 +71,10 @@ Perform the following setup on the **Grafana server**:
 - Use [dashboard provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards) with [work-dashboard.json](https://github.com/vladak/workmon/blob/main/work-dashboard.json)
 - Set up the service to publish annotations using the instructions on https://github.com/vladak/mq2anno
 
+The dashboard looks like this (the values are trimmed as I have just started recording the data recently):
+
+![work dashboard in Grafana](/img/work-dashboard.png)
+
 ## Install
 
 Assumes the service will be run under the `pi` user.
