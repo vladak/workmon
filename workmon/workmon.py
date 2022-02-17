@@ -153,7 +153,7 @@ class Workmon:
         #
         while True:
             table_state, display_on = self.get_sensor_values()
-            if display_on is None:
+            if display_on is None or table_state is None:
                 continue
 
             # How much time in seconds has elapsed since the last loop iteration.
