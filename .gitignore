@@ -130,3 +130,5 @@ dmypy.json
 
 # files that may contain secrets
 environment
+secrets.*
+settings.toml

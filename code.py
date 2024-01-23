@@ -44,7 +44,7 @@ except ImportError:
     raise
 
 # First set some parameters used for shapes and text
-BORDER = 10
+BORDER = 5
 FONTSCALE = 2
 BACKGROUND_COLOR = 0x00FF00  # Bright Green
 FOREGROUND_COLOR = 0xAA0088  # Purple
@@ -292,13 +292,10 @@ def main():
 
     text = "Starting.."
     text_area = label.Label(terminalio.FONT, text=text, color=TEXT_COLOR)
-    # TODO: use anchor point to avoid getting the height
-    # https://learn.adafruit.com/circuitpython-display-support-using-displayio/text
-    text_height = text_area.bounding_box[3] * FONTSCALE
+    text_area.anchor_point = (0, 0)
+    text_area.anchored_position = (BORDER, BORDER)
     text_group = displayio.Group(
         scale=FONTSCALE,
-        x=BORDER,
-        y=BORDER + text_height // 2,
     )
     text_group.append(text_area)  # Subgroup for text scaling
     splash.append(text_group)
