@@ -82,6 +82,7 @@ TEMPERATURE = "temp"
 HUMIDITY = "humidity"
 POWER = "power"
 LAST_UPDATE = "time"
+TABLE_STATE_DURATION = "table_state_duration"
 
 
 def blink(pixel):
@@ -173,7 +174,18 @@ def refresh_text(
     else:
         hum_text = prefix + "N/A"
 
-    text_area.text = f"{temp_text}\n{hum_text}"
+    prefix = "Tbl: "
+    val = user_data.get(TABLE_STATE_DURATION)
+    if val:
+        hrs = val // 3600
+        mins = (val % 3600) // 60
+        # TODO: the 02 assumes that the table will not stay in the same position for days.
+        time_val = f"{hrs:02}:{mins:02}"
+        table_text = prefix + f"{time_val}"
+    else:
+        table_text = prefix + "N/A"
+
+    text_area.text = f"{temp_text}\n{hum_text}\n{table_text}"
 
 
 def parse_time(datetime_str):
@@ -329,6 +341,9 @@ def main():
     end_hr = secrets.get("end_hr")
 
     distance_threshold = secrets.get("distance_threshold")
+    stamp = time.monotonic_ns()
+    prev_table_state = None
+    table_state_duration = 0
 
     while True:
         distance = us100.distance
@@ -340,6 +355,20 @@ def main():
         mqtt_client.publish(
             secrets.get("mqtt_topic_distance"), json.dumps({"distance": distance})
         )
+
+        # Record the duration of table position.
+        if prev_table_state:
+            if prev_table_state == table_state:
+                table_state_duration += (time.monotonic_ns() - stamp) // 1_000_000_000
+                logger.debug(
+                    f"table state '{table_state}' preserved (for {table_state_duration} sec)"
+                )
+            else:
+                logger.debug(f"table state changed {prev_table_state} -> {table_state}")
+                table_state_duration = 0
+        prev_table_state = table_state
+        user_data.update({TABLE_STATE_DURATION: table_state_duration})
+        stamp = time.monotonic_ns()
 
         # TODO:
         #   blank the display during certain hours
@@ -359,6 +388,8 @@ def main():
             if power:
                 if power > secrets.get(POWER_THRESH):
                     logger.debug("power on")
+                    # TODO: change the icon if table in the same position above threshold
+                    #       corner case: start of work in the morning
                 else:
                     logger.debug("power off")
             else:
