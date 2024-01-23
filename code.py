@@ -46,9 +46,8 @@ except ImportError:
 # First set some parameters used for shapes and text
 BORDER = 5
 FONTSCALE = 2
-BACKGROUND_COLOR = 0x00FF00  # Bright Green
-FOREGROUND_COLOR = 0xAA0088  # Purple
-TEXT_COLOR = 0xFFFF00
+TEXT_COLOR_BASE = 0xFFFF00
+TEXT_COLOR_ALERT = 0xFF0000
 
 BROKER_PORT = "broker_port"
 LOG_TOPIC = "log_topic"
@@ -291,7 +290,7 @@ def main():
     grp.append(splash)
 
     text = "Starting.."
-    text_area = label.Label(terminalio.FONT, text=text, color=TEXT_COLOR)
+    text_area = label.Label(terminalio.FONT, text=text, color=TEXT_COLOR_BASE)
     text_area.anchor_point = (0, 0)
     text_area.anchored_position = (BORDER, BORDER)
     text_group = displayio.Group(
@@ -300,24 +299,7 @@ def main():
     text_group.append(text_area)  # Subgroup for text scaling
     splash.append(text_group)
 
-    icon_path = secrets.get(ICON_PATH)
-    try:
-        with open(icon_path, "rb"):
-            #
-            # Technically the OnDiskBitmap should allow file object
-            # for file opened in binary mode (for backward compatibility),
-            # however this does not seem to be the case.
-            #
-            icon_bitmap = displayio.OnDiskBitmap(icon_path)
-            default_tile_grid = displayio.TileGrid(
-                icon_bitmap,
-                pixel_shader=icon_bitmap.pixel_shader,
-                x=display.width - icon_bitmap.width + 10,
-                y=display.height - icon_bitmap.height,
-            )
-            splash.append(default_tile_grid)
-    except Exception as e:
-        logger.error(f"cannot display {icon_path}: {e}")
+    display_icon(display, splash)
 
     start_hr = secrets.get("start_hr")
     end_hr = secrets.get("end_hr")
@@ -357,6 +339,33 @@ def main():
             display.brightness = 0
 
         mqtt_client.loop(1)
+
+
+def display_icon(display, splash):
+    """
+    Display icon in the bottom right corner.
+    """
+
+    logger = logging.getLogger(__name__)
+
+    icon_path = secrets.get(ICON_PATH)
+    try:
+        with open(icon_path, "rb"):
+            #
+            # Technically the OnDiskBitmap should allow file object
+            # for file opened in binary mode (for backward compatibility),
+            # however this does not seem to be the case.
+            #
+            icon_bitmap = displayio.OnDiskBitmap(icon_path)
+            default_tile_grid = displayio.TileGrid(
+                icon_bitmap,
+                pixel_shader=icon_bitmap.pixel_shader,
+                x=display.width - icon_bitmap.width + 10,
+                y=display.height - icon_bitmap.height,
+            )
+            splash.append(default_tile_grid)
+    except Exception as e:
+        logger.error(f"cannot display {icon_path}: {e}")
 
 
 try:
