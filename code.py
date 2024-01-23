@@ -61,6 +61,7 @@ ICON_PATH = "icon_path"
 TZ = "timezone"
 POWER_THRESH = "power_threshold_watts"
 LAST_UPDATE_THRESH = "last_update_threshold"
+CO2_THRESH = "co2_threshold"
 
 MANDATORY_SECRETS = [
     BROKER,
@@ -73,6 +74,7 @@ MANDATORY_SECRETS = [
     TZ,
     POWER_THRESH,
     LAST_UPDATE_THRESH,
+    CO2_THRESH,
 ]
 
 CO2 = "co2"
@@ -124,7 +126,9 @@ def on_message_with_power(mqtt, topic, msg):
         logger.error(f"failed to parse {msg}: {e}")
 
 
-def refresh_text(text_area, user_data, last_update_threshold):
+def refresh_text(
+    co2_value_area, text_area, user_data, last_update_threshold, co2_threshold
+):
     """
     change the contents of the text label used to draw on the display
     """
@@ -142,13 +146,17 @@ def refresh_text(text_area, user_data, last_update_threshold):
         user_data[TEMPERATURE] = None
         user_data[HUMIDITY] = None
 
-    # TODO: draw with different color when above certain threshold
-    co2 = user_data.get(CO2)
-    prefix = "CO2: "
-    if co2:
-        co2_text = prefix + f"{co2} ppm"
+    co2_value = user_data.get(CO2)
+    if co2_value:
+        co2_value_area.text = f"{co2_value} ppm"
+        # Draw with different color when above certain threshold.
+        if int(co2_value) > co2_threshold:
+            logger.debug(f"CO2 above threshold ({co2_value} > {co2_threshold})")
+            co2_value_area.color = TEXT_COLOR_ALERT
+        else:
+            co2_value_area.color = TEXT_COLOR_BASE
     else:
-        co2_text = prefix + "N/A"
+        co2_value_area.text = "N/A"
 
     prefix = "Temp: "
     temp = user_data.get(TEMPERATURE)
@@ -165,7 +173,7 @@ def refresh_text(text_area, user_data, last_update_threshold):
     else:
         hum_text = prefix + "N/A"
 
-    text_area.text = f"{co2_text}\n{temp_text}\n{hum_text}"
+    text_area.text = f"{temp_text}\n{hum_text}"
 
 
 def parse_time(datetime_str):
@@ -179,7 +187,7 @@ def parse_time(datetime_str):
 
 def get_time(requests, time_url):
     """
-    return current hour:minute
+    return current hour:minute or None
     TODO: use MQTT based time to avoid outside request
     """
     logger = logging.getLogger(__name__)
@@ -190,7 +198,7 @@ def get_time(requests, time_url):
         data = response.json()
     except json.decoder.JSONDecodeError as e:
         logger.error(f"failed to parse {response.text}: {e}")
-        return
+        return None
 
     # Parse the time from the datetime string
     current_hour, current_minute = parse_time(data["datetime"])
@@ -289,15 +297,31 @@ def main():
     splash = displayio.Group()
     grp.append(splash)
 
-    text = "Starting.."
-    text_area = label.Label(terminalio.FONT, text=text, color=TEXT_COLOR_BASE)
-    text_area.anchor_point = (0, 0)
-    text_area.anchored_position = (BORDER, BORDER)
+    # Subgroup for text scaling
     text_group = displayio.Group(
         scale=FONTSCALE,
     )
-    text_group.append(text_area)  # Subgroup for text scaling
     splash.append(text_group)
+
+    text = "CO2: "
+    co2_prefix_area = label.Label(terminalio.FONT, text=text, color=TEXT_COLOR_BASE)
+    co2_prefix_area.anchor_point = (0, 0)
+    co2_prefix_area.anchored_position = (BORDER, BORDER)
+    text_group.append(co2_prefix_area)
+
+    co2_value_area = label.Label(terminalio.FONT, text="", color=TEXT_COLOR_BASE)
+    co2_value_area.anchor_point = (0, 0)
+    co2_value_area.anchored_position = (
+        BORDER + co2_prefix_area.bounding_box[2],
+        BORDER,
+    )
+    text_group.append(co2_value_area)
+
+    # remaining text
+    text_area = label.Label(terminalio.FONT, text="", color=TEXT_COLOR_BASE)
+    text_area.anchor_point = (0, 0)
+    text_area.anchored_position = (BORDER, 2 * BORDER + co2_prefix_area.bounding_box[3])
+    text_group.append(text_area)
 
     display_icon(display, splash)
 
@@ -323,7 +347,13 @@ def main():
         cur_hr, _ = get_time(requests, time_url)
         if start_hr <= cur_hr < end_hr:
             display.brightness = 1
-            refresh_text(text_area, user_data, secrets.get(LAST_UPDATE_THRESH))
+            refresh_text(
+                co2_value_area,
+                text_area,
+                user_data,
+                secrets.get(LAST_UPDATE_THRESH),
+                secrets.get(CO2_THRESH),
+            )
             logger.debug(f"user data = {user_data}")
             power = user_data.get(POWER)
             if power:
