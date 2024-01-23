@@ -1,6 +1,4 @@
-pyserial
 adafruit-circuitpython-us100
-prometheus-client
-PyP100
-requests
-paho-mqtt
+adafruit-circuitpython-requests
+adafruit-circuitpython-minimqtt
+adafruit-circuitpython-logging
