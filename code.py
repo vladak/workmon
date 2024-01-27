@@ -297,7 +297,7 @@ def main():
 
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     # This provides daylight savings time automatically.
-    time_url = "https://worldtimeapi.org/api/timezone/" + secrets.get(TZ)
+    time_url = "http://worldtimeapi.org/api/timezone/" + secrets.get(TZ)
 
     # pylint: disable=no-member
     display = board.DISPLAY
