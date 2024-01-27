@@ -57,11 +57,12 @@ BROKER = "broker"
 PASSWORD = "password"
 SSID = "SSID"
 LOG_LEVEL = "log_level"
-ICON_PATH = "icon_path"
+ICON_PATHS = "icon_paths"
 TZ = "timezone"
 POWER_THRESH = "power_threshold_watts"
 LAST_UPDATE_THRESH = "last_update_threshold"
 CO2_THRESH = "co2_threshold"
+TABLE_STATE_DUR_THRESH = "table_state_dur_threshold"
 
 MANDATORY_SECRETS = [
     BROKER,
@@ -70,11 +71,12 @@ MANDATORY_SECRETS = [
     MQTT_TOPIC_ENV,
     PASSWORD,
     SSID,
-    ICON_PATH,
+    ICON_PATHS,
     TZ,
     POWER_THRESH,
     LAST_UPDATE_THRESH,
     CO2_THRESH,
+    TABLE_STATE_DUR_THRESH,
 ]
 
 CO2 = "co2"
@@ -309,6 +311,11 @@ def main():
     splash = displayio.Group()
     grp.append(splash)
 
+    # The images should have transparent background, however that does not seem
+    # to work with BMPs, so display the icon first so that the text can be displayed on the top.
+    image_tile_grid = display_icon(display, None, secrets.get(ICON_PATHS)[0])
+    splash.append(image_tile_grid)
+
     # Subgroup for text scaling
     text_group = displayio.Group(
         scale=FONTSCALE,
@@ -334,8 +341,6 @@ def main():
     text_area.anchor_point = (0, 0)
     text_area.anchored_position = (BORDER, 2 * BORDER + co2_prefix_area.bounding_box[3])
     text_group.append(text_area)
-
-    display_icon(display, splash)
 
     start_hr = secrets.get("start_hr")
     end_hr = secrets.get("end_hr")
@@ -366,6 +371,7 @@ def main():
             else:
                 logger.debug(f"table state changed {prev_table_state} -> {table_state}")
                 table_state_duration = 0
+
         prev_table_state = table_state
         user_data.update({TABLE_STATE_DURATION: table_state_duration})
         stamp = time.monotonic_ns()
@@ -388,8 +394,12 @@ def main():
             if power:
                 if power > secrets.get(POWER_THRESH):
                     logger.debug("power on")
-                    # TODO: change the icon if table in the same position above threshold
-                    #       corner case: start of work in the morning
+                    # TODO: corner case: start of work in the morning
+                    # Change the icon if table state exceeded the threshold.
+                    icon_path = secrets.get(ICON_PATHS)[0]
+                    if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
+                        icon_path = secrets.get(ICON_PATHS)[1]
+                    display_icon(display, image_tile_grid, icon_path)
                 else:
                     logger.debug("power off")
             else:
@@ -402,14 +412,13 @@ def main():
         mqtt_client.loop(1)
 
 
-def display_icon(display, splash):
+def display_icon(display, tile_grid, icon_path):
     """
     Display icon in the bottom right corner.
     """
 
     logger = logging.getLogger(__name__)
 
-    icon_path = secrets.get(ICON_PATH)
     try:
         with open(icon_path, "rb"):
             #
@@ -418,13 +427,21 @@ def display_icon(display, splash):
             # however this does not seem to be the case.
             #
             icon_bitmap = displayio.OnDiskBitmap(icon_path)
-            default_tile_grid = displayio.TileGrid(
-                icon_bitmap,
-                pixel_shader=icon_bitmap.pixel_shader,
-                x=display.width - icon_bitmap.width + 10,
-                y=display.height - icon_bitmap.height,
-            )
-            splash.append(default_tile_grid)
+            if not tile_grid:
+                tile_grid = displayio.TileGrid(
+                    icon_bitmap,
+                    pixel_shader=icon_bitmap.pixel_shader,
+                    x=display.width - icon_bitmap.width + 10,
+                    y=display.height - icon_bitmap.height,
+                )
+                return tile_grid
+
+            # This assumes that the icon size is the same as the original,
+            # otherwise the TileGrid will not allow the update.
+            tile_grid.bitmap = icon_bitmap
+            tile_grid.pixel_shader = icon_bitmap.pixel_shader
+            tile_grid.x = display.width - icon_bitmap.width + 10
+            tile_grid.y = display.height - icon_bitmap.height
     except Exception as e:
         logger.error(f"cannot display {icon_path}: {e}")
 
