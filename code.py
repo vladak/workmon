@@ -406,6 +406,9 @@ def main():
                     display_icon(display, image_tile_grid, icon_path)
                 else:
                     logger.debug("power off")
+                    # Reset the table position tracking. If the display went off,
+                    # the was likely a work pause.
+                    table_state_duration = 0
             else:
                 logger.debug("power N/A")
             blink(pixel)
