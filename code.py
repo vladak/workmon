@@ -7,7 +7,6 @@ import ssl
 import time
 import traceback
 
-
 import adafruit_logging as logging
 import adafruit_requests
 import adafruit_us100
@@ -34,10 +33,9 @@ except MemoryError as e:
 import socketpool
 from adafruit_display_text import label
 
+from binarystate import BinaryState
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
-
-from binarystate import BinaryState
 
 try:
     from secrets import secrets
@@ -413,6 +411,7 @@ def main():
 def display_icon(display, tile_grid, icon_path):
     """
     Display icon in the bottom right corner.
+    :return: TileGrid object (either new if the tile_grid argument was None or updated)
     """
 
     logger = logging.getLogger(__name__)
@@ -440,8 +439,10 @@ def display_icon(display, tile_grid, icon_path):
             tile_grid.pixel_shader = icon_bitmap.pixel_shader
             tile_grid.x = display.width - icon_bitmap.width + 10
             tile_grid.y = display.height - icon_bitmap.height
+            return tile_grid
     except Exception as e:
         logger.error(f"cannot display {icon_path}: {e}")
+        return None
 
 
 try:
