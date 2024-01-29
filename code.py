@@ -361,26 +361,30 @@ def main():
             secrets.get("mqtt_topic_distance"), json.dumps({"distance": distance})
         )
 
-        # Record the duration of table position.
-        if prev_table_state:
-            if prev_table_state == table_state:
-                table_state_duration += (time.monotonic_ns() - stamp) // 1_000_000_000
-                logger.debug(
-                    f"table state '{table_state}' preserved (for {table_state_duration} sec)"
-                )
-            else:
-                logger.debug(f"table state changed {prev_table_state} -> {table_state}")
-                table_state_duration = 0
-
-        prev_table_state = table_state
-        user_data.update({TABLE_STATE_DURATION: table_state_duration})
-        stamp = time.monotonic_ns()
-
         # TODO:
         #   blank the display during certain hours
         #   unless a button is pressed - then leave it on for bunch of iterations
         cur_hr, _ = get_time(requests, time_url)
         if start_hr <= cur_hr < end_hr:
+            # Record the duration of table position.
+            if prev_table_state:
+                if prev_table_state == table_state:
+                    table_state_duration += (
+                        time.monotonic_ns() - stamp
+                    ) // 1_000_000_000
+                    logger.debug(
+                        f"table state '{table_state}' preserved (for {table_state_duration} sec)"
+                    )
+                else:
+                    logger.debug(
+                        f"table state changed {prev_table_state} -> {table_state}"
+                    )
+                    table_state_duration = 0
+
+            prev_table_state = table_state
+            user_data.update({TABLE_STATE_DURATION: table_state_duration})
+            stamp = time.monotonic_ns()
+
             display.brightness = 1
             refresh_text(
                 co2_value_area,
@@ -394,7 +398,6 @@ def main():
             if power:
                 if power > secrets.get(POWER_THRESH):
                     logger.debug("power on")
-                    # TODO: corner case: start of work in the morning
                     # Change the icon if table state exceeded the threshold.
                     icon_path = secrets.get(ICON_PATHS)[0]
                     if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
@@ -408,6 +411,9 @@ def main():
         else:
             logger.debug("outside of working hours, setting the display off")
             display.brightness = 0
+
+            # Deals with start of work in the morning.
+            table_state_duration = 0
 
         mqtt_client.loop(1)
 
