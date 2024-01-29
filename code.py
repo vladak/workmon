@@ -394,6 +394,7 @@ def main():
                 else:
                     logger.debug("power off")
                     # Reset the table position tracking. If the display went off, there was likely a work pause.
+                    # Do not set the user_data element to keep showing the last value.
                     table_state.reset()
             else:
                 logger.debug("power N/A")
@@ -404,6 +405,7 @@ def main():
 
             # Deals with start of work in the morning.
             table_state.reset()
+            user_data[TABLE_STATE_DURATION] = None
 
         mqtt_client.loop(1)
 
