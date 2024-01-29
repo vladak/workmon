@@ -37,6 +37,8 @@ from adafruit_display_text import label
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 
+from binarystate import BinaryState
+
 try:
     from secrets import secrets
 except ImportError:
@@ -346,17 +348,15 @@ def main():
     end_hr = secrets.get("end_hr")
 
     distance_threshold = secrets.get("distance_threshold")
-    stamp = time.monotonic_ns()
-    prev_table_state = None
-    table_state_duration = 0
+    table_state = BinaryState()
 
     while True:
         distance = us100.distance
         if distance > distance_threshold:
-            table_state = "up"
+            table_state_val = "up"
         else:
-            table_state = "down"
-        logger.info(f"distance: {distance} cm (table {table_state})")
+            table_state_val = "down"
+        logger.info(f"distance: {distance} cm (table {table_state_val})")
         mqtt_client.publish(
             secrets.get("mqtt_topic_distance"), json.dumps({"distance": distance})
         )
@@ -380,24 +380,13 @@ def main():
                 if power > secrets.get(POWER_THRESH):
                     logger.debug("power on")
 
-                    # Record the duration of table position.
-                    if prev_table_state:
-                        if prev_table_state == table_state:
-                            table_state_duration += (
-                                time.monotonic_ns() - stamp
-                            ) // 1_000_000_000
-                            logger.debug(
-                                f"table state '{table_state}' preserved (for {table_state_duration} sec)"
-                            )
-                        else:
-                            logger.debug(
-                                f"table state changed {prev_table_state} -> {table_state}"
-                            )
-                            table_state_duration = 0
-
-                    prev_table_state = table_state
+                    table_state_duration = table_state.update(table_state_val)
+                    #
+                    # Implementation note:
+                    #   The table state is smuggled into the user_data (used to stored metrics received from MQTT)
+                    #   so that refresh_text() has more uniform argument types.
+                    #
                     user_data.update({TABLE_STATE_DURATION: table_state_duration})
-                    stamp = time.monotonic_ns()
 
                     # Change the icon if table state exceeded the threshold.
                     icon_path = secrets.get(ICON_PATHS)[0]
@@ -406,9 +395,8 @@ def main():
                     display_icon(display, image_tile_grid, icon_path)
                 else:
                     logger.debug("power off")
-                    # Reset the table position tracking. If the display went off,
-                    # the was likely a work pause.
-                    table_state_duration = 0
+                    # Reset the table position tracking. If the display went off, there was likely a work pause.
+                    table_state.reset()
             else:
                 logger.debug("power N/A")
             blink(pixel)
@@ -417,7 +405,7 @@ def main():
             display.brightness = 0
 
             # Deals with start of work in the morning.
-            table_state_duration = 0
+            table_state.reset()
 
         mqtt_client.loop(1)
 
