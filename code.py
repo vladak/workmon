@@ -389,7 +389,8 @@ def main():
                     table_state_duration = table_state.update(table_state_val)
                     #
                     # Implementation note:
-                    #   The table state is smuggled into the user_data (used to stored metrics received from MQTT)
+                    #   The table state is smuggled into the user_data
+                    #   (used to stored metrics received from MQTT)
                     #   so that refresh_text() has more uniform argument types.
                     #
                     user_data.update({TABLE_STATE_DURATION: table_state_duration})
@@ -401,7 +402,8 @@ def main():
                     display_icon(display, image_tile_grid, icon_path)
                 else:
                     logger.debug("power off")
-                    # Reset the table position tracking. If the display went off, there was likely a work pause.
+                    # Reset the table position tracking. If the display went off,
+                    # there was likely a work pause.
                     # Do not set the user_data element to keep showing the last value.
                     table_state.reset()
             else:
