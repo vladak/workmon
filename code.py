@@ -3,12 +3,11 @@ XXX
 """
 
 import json
-import ssl
 import time
 import traceback
 
 import adafruit_logging as logging
-import adafruit_requests as requests
+import adafruit_ntp
 import adafruit_us100
 import board
 import busio
@@ -58,7 +57,6 @@ PASSWORD = "password"
 SSID = "SSID"
 LOG_LEVEL = "log_level"
 ICON_PATHS = "icon_paths"
-TZ = "timezone"
 POWER_THRESH = "power_threshold_watts"
 LAST_UPDATE_THRESH = "last_update_threshold"
 CO2_THRESH = "co2_threshold"
@@ -72,7 +70,6 @@ MANDATORY_SECRETS = [
     PASSWORD,
     SSID,
     ICON_PATHS,
-    TZ,
     POWER_THRESH,
     LAST_UPDATE_THRESH,
     CO2_THRESH,
@@ -190,37 +187,16 @@ def refresh_text(
     text_area.text = f"{temp_text}\n{hum_text}\n{table_text}"
 
 
-def parse_time(datetime_str):
-    # Extract the time part from the datetime string
-    # TODO: parse this properly (ISO time) or use the 'unixtime' field of the response
-    time_str = datetime_str.split("T")[1].split(".")[0]
-    hour, minute, _ = map(int, time_str.split(":"))
-
-    return hour, minute
-
-
-def get_time(requests_session, time_url):
+def get_time(ntp):
     """
     return current hour:minute or None
-    TODO: use MQTT based time to avoid outside request
     """
     logger = logging.getLogger(__name__)
 
-    # The default timeout is 60 seconds which is too much.
-    try:
-        response = requests_session.get(time_url, timeout=3)
-    except requests.OutOfRetries as e:
-        logger.error(f"failed to get time from {time_url}: {e}")
-        return None
-    try:
-        data = response.json()
-    except json.decoder.JSONDecodeError as e:
-        logger.error(f"failed to parse {response.text}: {e}")
-        return None
-
-    # Parse the time from the datetime string
-    current_hour, current_minute = parse_time(data["datetime"])
-    # Display the time
+    # TODO: deal with DST
+    current_time = ntp.datetime
+    current_hour = current_time.tm_hour
+    current_minute = current_time.tm_min
     logger.debug("time: {:2}:{:02}".format(current_hour, current_minute))
 
     return current_hour, current_minute
@@ -298,14 +274,14 @@ def main():
     user_data = {}
     mqtt_client = mqtt_setup(pool, user_data, log_level)
 
+    logger.debug("setting NTP up")
+    # The code is supposed to be running in specific time zone
+    # with NTP server running on the default router.
+    ntp = adafruit_ntp.NTP(pool, server=str(wifi.radio.ipv4_gateway), tz_offset=1)
+
     logger.debug("setting up US100")
     uart = busio.UART(board.TX, board.RX, baudrate=9600)
     us100 = adafruit_us100.US100(uart)
-
-    logger.debug("getting requests session for time query")
-    requests_session = requests.Session(pool, ssl.create_default_context())
-    # This provides daylight savings time automatically.
-    time_url = "http://worldtimeapi.org/api/timezone/" + secrets.get(TZ)
 
     # pylint: disable=no-member
     display = board.DISPLAY
@@ -370,7 +346,7 @@ def main():
         # TODO:
         #   blank the display during certain hours
         #   unless a button is pressed - then leave it on for bunch of iterations
-        cur_hr, _ = get_time(requests_session, time_url)
+        cur_hr, _ = get_time(ntp)
         if start_hr <= cur_hr < end_hr:
             display.brightness = 1
             refresh_text(

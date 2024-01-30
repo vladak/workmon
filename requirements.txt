@@ -1,5 +1,5 @@
 adafruit-circuitpython-us100
-adafruit-circuitpython-requests
 adafruit-circuitpython-minimqtt
 adafruit-circuitpython-logging
 adafruit-circuitpython-display_text
+adafruit-circuitpython-ntp
