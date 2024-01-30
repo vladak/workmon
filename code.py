@@ -8,7 +8,7 @@ import time
 import traceback
 
 import adafruit_logging as logging
-import adafruit_requests
+import adafruit_requests as requests
 import adafruit_us100
 import board
 import busio
@@ -199,7 +199,7 @@ def parse_time(datetime_str):
     return hour, minute
 
 
-def get_time(requests, time_url):
+def get_time(requests_session, time_url):
     """
     return current hour:minute or None
     TODO: use MQTT based time to avoid outside request
@@ -208,7 +208,7 @@ def get_time(requests, time_url):
 
     # The default timeout is 60 seconds which is too much.
     try:
-        response = requests.get(time_url, timeout=3)
+        response = requests_session.get(time_url, timeout=3)
     except requests.OutOfRetries as e:
         logger.error(f"failed to get time from {time_url}: {e}")
         return None
@@ -303,7 +303,7 @@ def main():
     us100 = adafruit_us100.US100(uart)
 
     logger.debug("getting requests session for time query")
-    requests = adafruit_requests.Session(pool, ssl.create_default_context())
+    requests_session = requests.Session(pool, ssl.create_default_context())
     # This provides daylight savings time automatically.
     time_url = "http://worldtimeapi.org/api/timezone/" + secrets.get(TZ)
 
@@ -370,7 +370,7 @@ def main():
         # TODO:
         #   blank the display during certain hours
         #   unless a button is pressed - then leave it on for bunch of iterations
-        cur_hr, _ = get_time(requests, time_url)
+        cur_hr, _ = get_time(requests_session, time_url)
         if start_hr <= cur_hr < end_hr:
             display.brightness = 1
             refresh_text(
