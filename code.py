@@ -298,9 +298,11 @@ def main():
     user_data = {}
     mqtt_client = mqtt_setup(pool, user_data, log_level)
 
+    logger.debug("setting up US100")
     uart = busio.UART(board.TX, board.RX, baudrate=9600)
     us100 = adafruit_us100.US100(uart)
 
+    logger.debug("getting requests session for time query")
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     # This provides daylight savings time automatically.
     time_url = "http://worldtimeapi.org/api/timezone/" + secrets.get(TZ)
@@ -309,6 +311,7 @@ def main():
     display = board.DISPLAY
     logger.debug(f"display resolution: w: {display.width} h: {display.height}")
 
+    logger.debug("setting display elements")
     grp = displayio.Group()
     display.root_group = grp
 
@@ -352,6 +355,7 @@ def main():
     distance_threshold = secrets.get("distance_threshold")
     table_state = BinaryState()
 
+    logger.debug("entering main loop")
     while True:
         distance = us100.distance
         if distance > distance_threshold:
