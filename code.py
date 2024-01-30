@@ -207,7 +207,11 @@ def get_time(requests, time_url):
     logger = logging.getLogger(__name__)
 
     # The default timeout is 60 seconds which is too much.
-    response = requests.get(time_url, timeout=3)
+    try:
+        response = requests.get(time_url, timeout=3)
+    except requests.OutOfRetries as e:
+        logger.error(f"failed to get time from {time_url}: {e}")
+        return None
     try:
         data = response.json()
     except json.decoder.JSONDecodeError as e:
