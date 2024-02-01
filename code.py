@@ -342,13 +342,20 @@ def main():
             table_state_val = "down"
         logger.info(f"distance: {distance} cm (table {table_state_val})")
         try:
+            # If the publish() fails with one of the exceptions below,
+            # reconnect will be attempted. The reconnect() will try number of times,
+            # so there is no point retrying here. The message to be published
+            # is not important anyway.
             mqtt_client.publish(
-                secrets.get("mqtt_topic_distance"), json.dumps({"distance": distance})
+                secrets.get("mqtt_topic_distance"),
+                json.dumps({"distance": distance}),
             )
         except OSError as e:
             logger.error(f"failed to publish MQTT message: {e}")
+            mqtt_client.reconnect()
         except MQTT.MMQTTException as e:
             logger.error(f"failed to publish MQTT message: {e}")
+            mqtt_client.reconnect()
 
         # TODO:
         #   blank the display during certain hours
