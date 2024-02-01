@@ -28,6 +28,8 @@ except MemoryError as e:
     # Let this fall through to main() so that appropriate reset can be performed.
     IMPORT_EXCEPTION = e
 
+import adafruit_minimqtt.adafruit_minimqtt as MQTT
+
 # pylint: disable=import-error
 import socketpool
 from adafruit_display_text import label
@@ -393,7 +395,12 @@ def main():
             table_state.reset()
             user_data[TABLE_STATE_DURATION] = None
 
-        mqtt_client.loop(1)
+        try:
+            mqtt_client.loop(1)
+        except MQTT.MMQTTException as e:
+            logger.error(f"MQTT error: {e}")
+            mqtt_client.reconnect()
+            mqtt_client.loop(1)
 
 
 def display_icon(display, tile_grid, icon_path):
