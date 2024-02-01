@@ -341,9 +341,14 @@ def main():
         else:
             table_state_val = "down"
         logger.info(f"distance: {distance} cm (table {table_state_val})")
-        mqtt_client.publish(
-            secrets.get("mqtt_topic_distance"), json.dumps({"distance": distance})
-        )
+        try:
+            mqtt_client.publish(
+                secrets.get("mqtt_topic_distance"), json.dumps({"distance": distance})
+            )
+        except OSError as e:
+            logger.error(f"failed to publish MQTT message: {e}")
+        except MQTT.MMQTTException as e:
+            logger.error(f"failed to publish MQTT message: {e}")
 
         # TODO:
         #   blank the display during certain hours
