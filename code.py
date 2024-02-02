@@ -347,6 +347,7 @@ def main():
     button.switch_to_input(pull=digitalio.Pull.UP)
     button_pressed_stamp = 0
 
+    published_stamp = 0
     logger.debug("entering main loop")
     while True:
         logger.info(f"button: {button.value}")
@@ -364,10 +365,13 @@ def main():
             # reconnect will be attempted. The reconnect() will try number of times,
             # so there is no point retrying here. The message to be published
             # is not important anyway.
-            mqtt_client.publish(
-                secrets.get("mqtt_topic_distance"),
-                json.dumps({"distance": distance}),
-            )
+            # Also, do not publish every iteration, only every 10 seconds or so.
+            if published_stamp < time.monotonic_ns() // 1_000_000 - 10:
+                mqtt_client.publish(
+                    secrets.get("mqtt_topic_distance"),
+                    json.dumps({"distance": distance}),
+                )
+            published_stamp = time.monotonic_ns()
         except OSError as e:
             logger.error(f"failed to publish MQTT message: {e}")
             mqtt_client.reconnect()
