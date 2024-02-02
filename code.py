@@ -380,7 +380,10 @@ def main():
         # Then leave it on for a minute.
         #
         cur_hr, _ = get_time(ntp)
-        if start_hr <= cur_hr < end_hr or button_pressed_stamp >= time.monotonic_ns() // 1_000_000_000 - 60:
+        if (
+            start_hr <= cur_hr < end_hr
+            or button_pressed_stamp >= time.monotonic_ns() // 1_000_000_000 - 60
+        ):
             display.brightness = 1
             refresh_text(
                 co2_value_area,
