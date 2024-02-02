@@ -408,12 +408,13 @@ def main():
             table_state.reset()
             user_data[TABLE_STATE_DURATION] = None
 
+        loop_timeout = 1
         try:
-            mqtt_client.loop(1)
+            mqtt_client.loop(loop_timeout)
         except MQTT.MMQTTException as e:
             logger.error(f"MQTT error: {e}")
             mqtt_client.reconnect()
-            mqtt_client.loop(1)
+            mqtt_client.loop(loop_timeout)
 
 
 def display_icon(display, tile_grid, icon_path):
