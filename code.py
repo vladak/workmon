@@ -11,6 +11,7 @@ import adafruit_ntp
 import adafruit_us100
 import board
 import busio
+import digitalio
 
 # pylint: disable=import-error
 import displayio
@@ -92,7 +93,7 @@ def blink(pixel):
     """
     pixel.brightness = 0.1
     pixel.fill((0, 0, 255))
-    time.sleep(0.5)
+    time.sleep(0.1)
     pixel.brightness = 0
 
 
@@ -215,7 +216,7 @@ def hard_reset(exception):
     microcontroller.reset()  # pylint: disable=no-member
 
 
-def mqtt_setup(pool, user_data, mqtt_log_level):
+def mqtt_setup(pool, user_data, mqtt_log_level, socket_timeout):
     """
     connect to MQTT server, subscribe to the topics and setup callbacks
     """
@@ -224,7 +225,12 @@ def mqtt_setup(pool, user_data, mqtt_log_level):
     broker_addr = secrets[BROKER]
     broker_port = secrets[BROKER_PORT]
     mqtt_client = mqtt_client_setup(
-        pool, broker_addr, broker_port, mqtt_log_level, user_data=user_data
+        pool,
+        broker_addr,
+        broker_port,
+        mqtt_log_level,
+        user_data=user_data,
+        socket_timeout=socket_timeout,
     )
     logger.info(f"Connecting to MQTT broker {broker_addr}:{broker_port}")
     mqtt_client.connect()
@@ -274,7 +280,9 @@ def main():
     pool = socketpool.SocketPool(wifi.radio)  # pylint: disable=no-member
 
     user_data = {}
-    mqtt_client = mqtt_setup(pool, user_data, log_level)
+    # The timeout has to be so low for the main loop to record button presses.
+    mqtt_loop_timeout = 0.05
+    mqtt_client = mqtt_setup(pool, user_data, logging.ERROR, mqtt_loop_timeout)
 
     logger.debug("setting NTP up")
     # The code is supposed to be running in specific time zone
@@ -334,14 +342,23 @@ def main():
     distance_threshold = secrets.get("distance_threshold")
     table_state = BinaryState()
 
+    logger.info("Setting up button")
+    button = digitalio.DigitalInOut(board.BUTTON)
+    button.switch_to_input(pull=digitalio.Pull.UP)
+    button_pressed_stamp = 0
+
     logger.debug("entering main loop")
     while True:
+        logger.info(f"button: {button.value}")
+        if not button.value:
+            button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
+
         distance = us100.distance
         if distance > distance_threshold:
             table_state_val = "up"
         else:
             table_state_val = "down"
-        logger.info(f"distance: {distance} cm (table {table_state_val})")
+        logger.debug(f"distance: {distance} cm (table {table_state_val})")
         try:
             # If the publish() fails with one of the exceptions below,
             # reconnect will be attempted. The reconnect() will try number of times,
@@ -358,11 +375,12 @@ def main():
             logger.error(f"failed to publish MQTT message: {e}")
             mqtt_client.reconnect()
 
-        # TODO:
-        #   blank the display during certain hours
-        #   unless a button is pressed - then leave it on for bunch of iterations
+        #
+        # Leave the display on during certain hours unless a button is pressed.
+        # Then leave it on for a minute.
+        #
         cur_hr, _ = get_time(ntp)
-        if start_hr <= cur_hr < end_hr:
+        if start_hr <= cur_hr < end_hr or button_pressed_stamp >= time.monotonic_ns() // 1_000_000_000 - 60:
             display.brightness = 1
             refresh_text(
                 co2_value_area,
@@ -399,7 +417,9 @@ def main():
                     table_state.reset()
             else:
                 logger.debug("power N/A")
-            blink(pixel)
+
+            # TODO: does not play well with loop_timeout
+            # blink(pixel)
         else:
             logger.debug("outside of working hours, setting the display off")
             display.brightness = 0
@@ -408,13 +428,12 @@ def main():
             table_state.reset()
             user_data[TABLE_STATE_DURATION] = None
 
-        loop_timeout = 1
         try:
-            mqtt_client.loop(loop_timeout)
+            mqtt_client.loop(mqtt_loop_timeout)
         except MQTT.MMQTTException as e:
             logger.error(f"MQTT error: {e}")
             mqtt_client.reconnect()
-            mqtt_client.loop(loop_timeout)
+            mqtt_client.loop(mqtt_loop_timeout)
 
 
 def display_icon(display, tile_grid, icon_path):

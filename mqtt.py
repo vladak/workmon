@@ -41,7 +41,7 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
-def mqtt_client_setup(pool, broker, port, log_level, user_data=None):
+def mqtt_client_setup(pool, broker, port, log_level, user_data=None, socket_timeout=1):
     """
     Set up a MiniMQTT Client
     """
@@ -55,6 +55,7 @@ def mqtt_client_setup(pool, broker, port, log_level, user_data=None):
         socket_pool=pool,
         ssl_context=ssl.create_default_context(),
         user_data=user_data,
+        socket_timeout=socket_timeout,
     )
     # Connect callback handlers to mqtt_client
     mqtt_client.on_connect = connect
