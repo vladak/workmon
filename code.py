@@ -299,7 +299,8 @@ def main():
     # The images should have transparent background, however that does not seem
     # to work with BMPs, so display the icon first so that the text can be displayed on the top.
     image_tile_grid = display_icon(display, None, secrets.get(ICON_PATHS)[0])
-    splash.append(image_tile_grid)
+    if image_tile_grid:
+        splash.append(image_tile_grid)
 
     # Subgroup for text scaling
     text_group = displayio.Group(
