@@ -274,6 +274,7 @@ def main():
     user_data = {}
     # The timeout has to be so low for the main loop to record button presses.
     mqtt_loop_timeout = 0.05
+    # pylint: disable=no-member
     mqtt_client = mqtt_setup(pool, user_data, logging.ERROR, mqtt_loop_timeout)
 
     logger.debug("setting NTP up")
@@ -474,6 +475,7 @@ def display_icon(display, tile_grid, icon_path):
             tile_grid.x = display.width - icon_bitmap.width + 10
             tile_grid.y = display.height - icon_bitmap.height
             return tile_grid
+    # pylint: disable=broad-exception-caught
     except Exception as e:
         logger.error(f"cannot display {icon_path}: {e}")
         return None
