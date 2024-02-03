@@ -336,19 +336,17 @@ def main():
     table_state = BinaryState()
 
     logger.info("Setting up buttons")
-    button_d0 = digitalio.DigitalInOut(board.D0)
-    button_d0.switch_to_input(pull=digitalio.Pull.UP)
-    button_d1 = digitalio.DigitalInOut(board.D1)
-    button_d1.switch_to_input(pull=digitalio.Pull.UP)
-    button_d2 = digitalio.DigitalInOut(board.D2)
-    button_d2.switch_to_input(pull=digitalio.Pull.UP)
-    buttons = [button_d0, button_d1, button_d2]
+    buttons = []
+    for button in [board.D0, board.D1, board.D2]:
+        button_io = digitalio.DigitalInOut(button)
+        button_io.switch_to_input(pull=digitalio.Pull.UP)
+        buttons.append(button_io)
     button_pressed_stamp = 0
 
     published_stamp = 0
     logger.debug("entering main loop")
     while True:
-        button_values = [v.value for v in buttons]
+        button_values = [b.value for b in buttons]
         logger.debug(f"button values: {button_values}")
         if False in button_values:
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
