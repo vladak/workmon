@@ -335,17 +335,22 @@ def main():
     distance_threshold = secrets.get("distance_threshold")
     table_state = BinaryState()
 
-    logger.info("Setting up button")
-    button = digitalio.DigitalInOut(board.BUTTON)
-    button.switch_to_input(pull=digitalio.Pull.UP)
+    logger.info("Setting up buttons")
+    button_d0 = digitalio.DigitalInOut(board.D0)
+    button_d0.switch_to_input(pull=digitalio.Pull.UP)
+    button_d1 = digitalio.DigitalInOut(board.D1)
+    button_d1.switch_to_input(pull=digitalio.Pull.UP)
+    button_d2 = digitalio.DigitalInOut(board.D2)
+    button_d2.switch_to_input(pull=digitalio.Pull.UP)
+    buttons = [button_d0, button_d1, button_d2]
     button_pressed_stamp = 0
 
     published_stamp = 0
     logger.debug("entering main loop")
     while True:
-        # TODO: any button D0/D1/D2 should trigger the pressed event
-        logger.info(f"button: {button.value}")
-        if not button.value:
+        button_values = [v.value for v in buttons]
+        logger.debug(f"button values: {button_values}")
+        if False in button_values:
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
 
         distance = us100.distance
