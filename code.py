@@ -363,12 +363,12 @@ def main():
             # so there is no point retrying here. The message to be published
             # is not important anyway.
             # Also, do not publish every iteration, only every 10 seconds or so.
-            if published_stamp < time.monotonic_ns() // 1_000_000 - 10:
+            if published_stamp < time.monotonic_ns() - 10 * 1_000_000_000:
                 mqtt_client.publish(
                     secrets.get("mqtt_topic_distance"),
                     json.dumps({"distance": distance}),
                 )
-            published_stamp = time.monotonic_ns()
+                published_stamp = time.monotonic_ns()
         except OSError as e:
             logger.error(f"failed to publish MQTT message: {e}")
             mqtt_client.reconnect()
