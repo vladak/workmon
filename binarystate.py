@@ -31,7 +31,7 @@ class BinaryState:
         logger = logging.getLogger(__name__)
 
         # Record the duration of table position.
-        if self.prev_state:
+        if self.prev_state is not None:
             if self.prev_state == cur_state:
                 self.state_duration += (
                     time.monotonic_ns() - self.stamp

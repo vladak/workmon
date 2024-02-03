@@ -36,6 +36,7 @@ import socketpool
 from adafruit_display_text import label
 
 from binarystate import BinaryState
+from blinker import Blinker
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 
@@ -85,16 +86,6 @@ HUMIDITY = "humidity"
 POWER = "power"
 LAST_UPDATE = "time"
 TABLE_STATE_DURATION = "table_state_duration"
-
-
-def blink(pixel):
-    """
-    Blink the Neo pixel blue.
-    """
-    pixel.brightness = 0.1
-    pixel.fill((0, 0, 255))
-    time.sleep(0.1)
-    pixel.brightness = 0
 
 
 def on_message_with_env_metrics(mqtt, topic, msg):
@@ -265,6 +256,7 @@ def main():
     logger.setLevel(log_level)
 
     pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
+    blinker = Blinker(pixel)
 
     logger.info("Running")
 
@@ -350,6 +342,7 @@ def main():
     published_stamp = 0
     logger.debug("entering main loop")
     while True:
+        # TODO: any button D0/D1/D2 should trigger the pressed event
         logger.info(f"button: {button.value}")
         if not button.value:
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
@@ -411,10 +404,16 @@ def main():
                     #
                     user_data.update({TABLE_STATE_DURATION: table_state_duration})
 
-                    # Change the icon if table state exceeded the threshold.
+                    #
+                    # Change the icon and set the neopixel to blinking
+                    # if table state exceeded the threshold.
+                    #
                     icon_path = secrets.get(ICON_PATHS)[0]
                     if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
                         icon_path = secrets.get(ICON_PATHS)[1]
+                        blinker.set_blinking(True)
+                    else:
+                        blinker.set_blinking(False)
                     display_icon(display, image_tile_grid, icon_path)
                 else:
                     logger.debug("power off")
@@ -422,11 +421,9 @@ def main():
                     # there was likely a work pause.
                     # Do not set the user_data element to keep showing the last value.
                     table_state.reset()
+                    blinker.set_blinking(False)
             else:
                 logger.debug("power N/A")
-
-            # TODO: does not play well with loop_timeout
-            # blink(pixel)
         else:
             logger.debug("outside of working hours, setting the display off")
             display.brightness = 0
@@ -434,6 +431,8 @@ def main():
             # Deals with start of work in the morning.
             table_state.reset()
             user_data[TABLE_STATE_DURATION] = None
+
+            blinker.set_blinking(False)
 
         try:
             mqtt_client.loop(mqtt_loop_timeout)
