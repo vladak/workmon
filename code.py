@@ -351,6 +351,9 @@ def main():
         if False in button_values:
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
 
+        # TODO: getting distance makes the code sleep 2 * 2 * 0.1 seconds,
+        #       so this is not ideal for tight loop like this.
+        #       Make the code get the distance only every couple of seconds.
         distance = us100.distance
         if distance > distance_threshold:
             table_state_val = "up"
