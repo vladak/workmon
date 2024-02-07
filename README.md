@@ -120,7 +120,7 @@ secrets = {
 
 It assumes there are 2 images in the `images` directory. It will do fine without them, however the table position alerting will resort just to blinking the diode.
 
-With [`circup`](https://github.com/adafruit/circup/) is installed:
+With [`circup`](https://github.com/adafruit/circup/) installed amd the Feather connected over USB (assuming Linux distro):
 ```
 circup install -r requirements.txt
 cp -R images/ *.py settings.toml /media/$USER/CIRCUITPY/
