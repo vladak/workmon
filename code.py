@@ -7,6 +7,7 @@ import time
 import traceback
 
 import adafruit_logging as logging
+import adafruit_minimqtt.adafruit_minimqtt as MQTT
 import adafruit_ntp
 import board
 import busio
@@ -16,8 +17,12 @@ import digitalio
 import displayio
 import microcontroller
 import neopixel
+
+# pylint: disable=import-error
+import socketpool
 import supervisor
 import terminalio
+from adafruit_display_text import label
 
 # This relies on local import to work around https://github.com/adafruit/circuitpython/issues/8887
 import adafruit_us100
@@ -30,12 +35,6 @@ try:
 except MemoryError as e:
     # Let this fall through to main() so that appropriate reset can be performed.
     IMPORT_EXCEPTION = e
-
-import adafruit_minimqtt.adafruit_minimqtt as MQTT
-
-# pylint: disable=import-error
-import socketpool
-from adafruit_display_text import label
 
 from binarystate import BinaryState
 from blinker import Blinker
