@@ -39,6 +39,11 @@ My goal is to provide the following functionality:
 - if the display is off, pushing any D0/D1/D2 button will turn it on for a minute.
 - the table state tracking depends on the power to be on
 
+## History
+
+Originally, this was based on a Raspberry Pi with USB hub to connect the distance reader and a light bulb with 3 lights.
+The Rpi died suddenly and I found more fun "architecture" based on Adafruit Feather.
+
 ## Setup
 
 ### TP-link P110
