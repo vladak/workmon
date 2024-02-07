@@ -120,6 +120,7 @@ def on_message_with_power(mqtt, topic, msg):
         logger.error(f"failed to parse {msg}: {json_error}")
 
 
+# pylint: disable=too-many-locals
 def refresh_text(
     co2_value_area, text_area, user_data, last_update_threshold, co2_threshold
 ):
@@ -155,7 +156,6 @@ def refresh_text(
     prefix = "Temp: "
     temp = user_data.get(TEMPERATURE)
     if temp:
-        # TODO: the small circle is not drawn with the current font
         temp_text = prefix + f"{temp}°C"
     else:
         temp_text = prefix + "N/A"
@@ -172,7 +172,6 @@ def refresh_text(
     if val:
         hrs = val // 3600
         mins = (val % 3600) // 60
-        # TODO: the 02 assumes that the table will not stay in the same position for days.
         time_val = f"{hrs:02}:{mins:02}"
         table_text = prefix + f"{time_val}"
     else:
@@ -187,7 +186,6 @@ def get_time(ntp):
     """
     logger = logging.getLogger(__name__)
 
-    # TODO: deal with DST
     current_time = ntp.datetime
     current_hour = current_time.tm_hour
     current_minute = current_time.tm_min
@@ -350,7 +348,6 @@ def main():
     while True:
         button_values = [b.value for b in buttons]
         logger.debug(f"button values: {button_values}")
-        # TODO: for some reason only D0 press gets detected
         if False in button_values:
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
 
