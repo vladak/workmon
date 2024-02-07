@@ -392,27 +392,14 @@ def main():
                 if power > secrets.get(POWER_THRESH):
                     logger.debug("power on")
 
-                    if table_state_val is not None:
-                        table_state_duration = table_state.update(table_state_val)
-                        #
-                        # Implementation note:
-                        #   The table state is smuggled into the user_data
-                        #   (used to stored metrics received from MQTT)
-                        #   so that refresh_text() has more uniform argument types.
-                        #
-                        user_data.update({TABLE_STATE_DURATION: table_state_duration})
-
-                        #
-                        # Change the icon and set the neopixel to blinking
-                        # if table state duration exceeded the threshold.
-                        #
-                        icon_path = secrets.get(ICON_PATHS)[0]
-                        if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
-                            icon_path = secrets.get(ICON_PATHS)[1]
-                            blinker.set_blinking(True)
-                        else:
-                            blinker.set_blinking(False)
-                        display_icon(display, image_tile_grid, icon_path)
+                    handle_table_state(
+                        blinker,
+                        display,
+                        image_tile_grid,
+                        table_state,
+                        table_state_val,
+                        user_data,
+                    )
                 else:
                     logger.debug("power off")
                     # Reset the table position tracking. If the display went off,
@@ -438,6 +425,37 @@ def main():
             logger.error(f"MQTT error: {mqtt_exception}")
             mqtt_client.reconnect()
             mqtt_client.loop(mqtt_loop_timeout)
+
+
+def handle_table_state(
+    blinker, display, image_tile_grid, table_state, table_state_val, user_data
+):
+    """
+    change the image based on table state duration
+    """
+    if table_state_val is None:
+        return
+
+    table_state_duration = table_state.update(table_state_val)
+    #
+    # Implementation note:
+    #   The table state is smuggled into the user_data
+    #   (used to stored metrics received from MQTT)
+    #   so that refresh_text() has more uniform argument types.
+    #
+    user_data.update({TABLE_STATE_DURATION: table_state_duration})
+
+    #
+    # Change the icon and set the neopixel to blinking
+    # if table state duration exceeded the threshold.
+    #
+    icon_path = secrets.get(ICON_PATHS)[0]
+    if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
+        icon_path = secrets.get(ICON_PATHS)[1]
+        blinker.set_blinking(True)
+    else:
+        blinker.set_blinking(False)
+    display_icon(display, image_tile_grid, icon_path)
 
 
 def handle_distance(distance, distance_threshold, mqtt_client):
