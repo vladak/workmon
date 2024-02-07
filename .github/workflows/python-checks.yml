@@ -6,6 +6,7 @@ on:
       - "*.py"
       - .github/workflows/python-checks.yml
       - pylintrc
+      - .isort.cfg
 
 jobs:
   checks:
