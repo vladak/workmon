@@ -236,6 +236,7 @@ def mqtt_setup(pool, user_data, mqtt_log_level, socket_timeout):
     return mqtt_client
 
 
+# pylint: disable=too-many-locals,too-many-statements
 def main():
     """
     setup and main loop
