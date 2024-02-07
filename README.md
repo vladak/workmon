@@ -30,14 +30,16 @@ My goal is to provide the following functionality:
   - to be mounted underneath the table at the back in order not to cause measurement interference with my legs/chair etc.
 - QtPy with temperature/humidity and CO2 sensors
   - publishing messages with the metrics to a MQTT topic. The Feather will subscribe to the topic and handle the values.
+- [3D printed stand](https://learn.adafruit.com/stand-for-feather-esp32-with-reverse-tft)
 
 ## Features
 
+- by default a set of metrics is displayed: CO2, tmperature, humidity and the duration of the current table position. Also, image is displayed if available.
 - The CO2 metric displayed will turn red if the value is greater than a configured threshold.
-- If the table is in the same position for too long (configurable), the image will be changed and the neopixel will start blinking.
+- If the table is in the same position for too long (configurable), the image will be changed and the neopixel on the back side will start blinking blue.
+  - the table state tracking depends on the monitored power to be above certain threshold (i.e. **computer** display being on)
 - the display is on only during certain hours (configurable)
 - if the display is off, pushing any D0/D1/D2 button will turn it on for a minute.
-- the table state tracking depends on the power to be on
 
 ## History
 
