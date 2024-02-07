@@ -16,6 +16,7 @@ My goal is to provide the following functionality:
     - send an alert if I have been working for too long in a given week (via Grafana + PagerDuty)
   - warn if I spend too much configuous time sitting/standing
     - similarly warn if I work for too long without a break
+  - monitor the working environment, esp. CO2 concentration, and alert if above given threshold
 
 ## Hardware
 
