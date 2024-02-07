@@ -21,27 +21,24 @@ My goal is to provide the following functionality:
 
 ## Hardware
 
-- [Raspberry Pi Zero 2 W](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/) (side note: as of end of CY 2021 it is out of stock on Adafruit, can be ordered 1 piece per customer locally)
+- [ReverseTFT Feather](https://www.adafruit.com/product/5691)
 - TP-link P110 smart WiFi socket
   - to detect my presence in front of the computer. This works with sufficient degree of precision because my display has the saver set just to 3 minutes.
     - while the presence could be detected in software, I wanted to avoid any changes whatsoever to the software of my company provided laptop. Other metrics such as light emitted by the display would not be as reliable.
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
   - to determine if the table is up/down
-- [USB to TTL Serial Cable](https://www.adafruit.com/product/954) (to connect the distance sensor to the Pi)
-- [Tri-Color USB Controlled Hemisphere Alarm Light](https://www.adafruit.com/product/5127) (no buzzer)
-- [Waveshare 4 Port USB HUB HAT](https://www.waveshare.com/usb-hub-hat.htm)
-  - to connect the bulb and the distance sensor to the Pi 
-- old iPhone 5C transparent plastic box (as a housing) with holes drilled for the distance sensor
+- iPhone headphones transparent plastic box (as a housing) with holes drilled for the distance sensor
   - to be mounted underneath the table at the back, on one of the [cable management boxes](https://www.fully.com/en-eu/accessories/wire-management/wiretamer.html) in order not to cause measurement interference with my legs etc.
+- QtPy with temperature/humidity and CO2 sensors
+  - publishing messages with the metrics to a MQTT topic. The Feather will subscribe to the topic and handle the values.
 
-Here are the parts laid out on the said table:
-![Parts](/img/parts.jpg)
-I used a [Dremel](https://us.dremel.com/en_US/) tool to carve the holes for the distance sensor (also on the side for the USB cables) and hot glue gun to attach the distance sensor to the lid so it does not move:
-![Assembled case](/img/assembled.jpg)
-and used double sided sticky tape to mount it underneath the table:
-![Underneath the table](/img/table.jpg)
+## Features
 
-The LED bulb is attached to the back of my display not to obtrude too much - the reflected light is enough to notice the blinking.
+- The CO2 metric displayed will turn red if the value is greater than a configured threshold.
+- If the table is in the same position for too long (configurable), the image will be changed and the neopixel will start blinking.
+- the display is on only during certain hours (configurable)
+- if the display is off, pushing any D0/D1/D2 button will turn it on for a minute.
+- the table state tracking depends on the power to be on
 
 ## Setup
 
@@ -51,9 +48,16 @@ Install the Tapo app on a mobile phone. Register new account, remember the user 
 
 Setup the plug so that it connects to dedicated (IoT) WiFi network.
 
-### Raspberry Pi
+### Feather
 
-Setup the Pi Zero to connect to the same WiFi network as the plug.
+Solder the US-100 (in UART mode) per the US-100 guide.
+
+### Metrics (prerequisites)
+
+- The code assumes that environmental metrics are published to a certain MQTT topic.
+  - For that I use https://github.com/vladak/shield with a QtPy.
+- The code takes the power consumption value from MQTT.
+  - https://github.com/vladak/plug2mqtt/ is used
 
 ### Prometheus
 
@@ -77,41 +81,42 @@ The dashboard looks like this (the values are trimmed as I have just started rec
 
 ![work dashboard in Grafana](/img/work-dashboard.png)
 
+## Configure
+
+The `secrets.py` should look like this:
+
+```yaml
+secrets = {
+    "SSID": "FOO",
+    "password": "XYZ",
+    "broker": "172.40.0.3",
+    "broker_port": 1883,
+    "log_level": "info",
+    "mqtt_topic_env": "devices/pracovna/qtpy",
+    "mqtt_topic_power": "devices/plug/pracovna",
+    "mqtt_topic_distance": "devices/pracovna/featherTFT",
+    "distance_threshold": 90,
+    "power_threshold_watts": 35,
+    "co2_threshold": 1000,
+    "last_update_threshold": 60,
+    "icon_paths": [
+        "/images/icons8-totoro-120.bmp",
+        "/images/icons8-totoro-120-umbrella.bmp",
+    ],
+    "table_state_dur_threshold": 1800,
+    "start_hr": 8,
+    "end_hr": 23,
+}
+```
+
 ## Install
 
-Assumes the service will be run under the `pi` user.
+It assumes there are 2 images in the `images` directory. It will do fine without them, however the table position alerting will resort just to blinking the diode.
 
-- pre-requisites:
+With [`circup`](https://github.com/adafruit/circup/) is installed:
 ```
-sudo apt-get install -y python3-venv
-sudo apt-get install -y python3-dev # for RPi.GPIO
-```
-- install:
-```
-sudo mkdir /srv
-sudo chown pi:pi /srv
-sudo apt-get install -y git
-git clone https://github.com/vladak/workmon /srv/workmon
-cd /srv/workmon
-python3 -m venv env
-. ./env/bin/activate
-# workaround for RPi.GPIO install: https://raspberrypi.stackexchange.com/a/135463
-export CFLAGS=-fcommon
-python setup.py install
-```
-- configure the service: create `/srv/workmon/environment` file and setup these environment variables inside:
-  - `USERNAME`: TP-link username
-  - `PASSWORD`: TP-link password
-  - `ARGS`: additional `workmon.py` arguments
-    - it will definitely need to contain `--hostname` with an argument (the TP-link hostname) which is required 
-    - keep in mind that this is not a shell syntax so using double quotes will break argument passing
-- setup the service (assumes the `pi` user)
-```
-  sudo cp /srv/workmon/workmon.service /etc/systemd/system/
-  sudo systemctl enable workmon
-  sudo systemctl daemon-reload  # in case the service file changed
-  sudo systemctl start workmon
-  sudo systemctl status workmon
+circup install -r requirements.txt
+cp -R images/ *.py settings.toml /media/$USER/CIRCUITPY/
 ```
 
 ## Guides:
