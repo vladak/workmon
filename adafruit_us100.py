@@ -27,6 +27,7 @@ import time
 
 try:
     from typing import Optional
+
     from busio import UART
 except ImportError:
     pass
