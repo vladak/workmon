@@ -191,7 +191,7 @@ def get_time(ntp):
     current_time = ntp.datetime
     current_hour = current_time.tm_hour
     current_minute = current_time.tm_min
-    logger.debug("time: {:2}:{:02}".format(current_hour, current_minute))
+    logger.debug(f"time: {current_hour:2}:{current_minute:02}")
 
     return current_hour, current_minute
 
