@@ -52,6 +52,5 @@ class BinaryState:
         """
         reset the state
         """
-        # TODO: reset self.stamp as well ?
         self.prev_state = None
         self.state_duration = 0
