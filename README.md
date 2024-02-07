@@ -23,10 +23,10 @@ My goal is to provide the following functionality:
 - TP-link P110 smart WiFi socket
   - to detect my presence in front of the computer. This works with sufficient degree of precision because my display has the saver set just to 3 minutes.
     - while the presence could be detected in software, I wanted to avoid any changes whatsoever to the software of my company provided laptop. Other metrics such as light emitted by the display would not be as reliable.
-- [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019)
+- [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019) connected directly (soldered) to the Feather
   - to determine if the table is up/down
-- iPhone headphones transparent plastic box (as a housing) with holes drilled for the distance sensor
-  - to be mounted underneath the table at the back, on one of the [cable management boxes](https://www.fully.com/en-eu/accessories/wire-management/wiretamer.html) in order not to cause measurement interference with my legs etc.
+- iPhone headphones transparent plastic box used as a housing for the distance sensor
+  - to be mounted underneath the table at the back in order not to cause measurement interference with my legs/chair etc.
 - QtPy with temperature/humidity and CO2 sensors
   - publishing messages with the metrics to a MQTT topic. The Feather will subscribe to the topic and handle the values.
 
@@ -120,3 +120,10 @@ cp -R images/ *.py settings.toml /media/$USER/CIRCUITPY/
 ## Guides:
 
 - US-100: https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/python-circuitpython
+
+## Lessons learned
+
+- so far, with the state of CircruitPython at lest, microcontroller based projects are all about tight loops, e.g. in order to sample button pressed events. There are some actions that might shed some time from that loop, e.g. the US-100 distance reading might require up to 0.4 seconds
+- due to the very dynamic nature of the microcontroller ecosystem, the workarounds for various issues are omnipresent
+- it is nice to have a friend with a Dremel
+- it is nice to be able to 3-D print stuff on demand
