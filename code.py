@@ -26,6 +26,10 @@ from adafruit_display_text import label
 
 # This relies on local import to work around https://github.com/adafruit/circuitpython/issues/8887
 import adafruit_us100
+from binarystate import BinaryState
+from blinker import Blinker
+from logutil import get_log_level
+from mqtt import mqtt_client_setup
 
 # For storing import exceptions so that they can be raised from main().
 IMPORT_EXCEPTION = None
@@ -35,11 +39,6 @@ try:
 except MemoryError as e:
     # Let this fall through to main() so that appropriate reset can be performed.
     IMPORT_EXCEPTION = e
-
-from binarystate import BinaryState
-from blinker import Blinker
-from logutil import get_log_level
-from mqtt import mqtt_client_setup
 
 try:
     from secrets import secrets
@@ -413,6 +412,7 @@ def main():
             mqtt_client.loop(mqtt_loop_timeout)
 
 
+# pylint: disable=too-many-arguments
 def handle_power(
     blinker, display, image_tile_grid, table_state, table_state_val, user_data
 ):
@@ -447,6 +447,7 @@ def handle_power(
         blinker.set_blinking(False)
 
 
+# pylint: disable=too-many-arguments
 def handle_table_state(
     blinker, display, image_tile_grid, table_state, table_state_val, user_data
 ):
