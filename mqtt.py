@@ -1,6 +1,7 @@
 """
 MQTT utility functions
 """
+
 import ssl
 
 import adafruit_logging as logging

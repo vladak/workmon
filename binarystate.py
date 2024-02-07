@@ -1,6 +1,7 @@
 """
 generic binary state tracking class
 """
+
 import time
 
 import adafruit_logging as logging

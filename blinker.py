@@ -1,6 +1,7 @@
 """
 module that contains the Blinker class
 """
+
 import adafruit_logging as logging
 
 from binarystate import BinaryState
