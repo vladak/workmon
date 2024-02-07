@@ -101,8 +101,8 @@ def on_message_with_env_metrics(mqtt, topic, msg):
         mqtt.user_data[TEMPERATURE] = metrics.get("temperature")
         mqtt.user_data[HUMIDITY] = metrics.get("humidity")
         mqtt.user_data[LAST_UPDATE] = time.monotonic_ns()
-    except json.decoder.JSONDecodeError as e:
-        logger.error(f"failed to parse {msg}: {e}")
+    except json.decoder.JSONDecodeError as json_error:
+        logger.error(f"failed to parse {msg}: {json_error}")
 
 
 # pylint: disable=unused-argument
@@ -116,8 +116,8 @@ def on_message_with_power(mqtt, topic, msg):
     try:
         metrics = json.loads(msg)
         mqtt.user_data[POWER] = metrics.get("current_power")
-    except json.decoder.JSONDecodeError as e:
-        logger.error(f"failed to parse {msg}: {e}")
+    except json.decoder.JSONDecodeError as json_error:
+        logger.error(f"failed to parse {msg}: {json_error}")
 
 
 def refresh_text(
@@ -482,30 +482,34 @@ def display_icon(display, tile_grid, icon_path):
             tile_grid.y = display.height - icon_bitmap.height
             return tile_grid
     # pylint: disable=broad-exception-caught
-    except Exception as e:
-        logger.error(f"cannot display {icon_path}: {e}")
+    except Exception as broad_exception:
+        logger.error(f"cannot display {icon_path}: {broad_exception}")
         return None
 
 
 try:
     main()
-except ConnectionError as e:
+except ConnectionError as conn_error:
     # When this happens, it usually means that the microcontroller's wifi/networking is botched.
     # The only way to recover is to perform hard reset.
-    hard_reset(e)
-except MemoryError as e:
+    hard_reset(conn_error)
+except MemoryError as memory_error:
     # This is usually the case of delayed exception from the 'import wifi' statement,
     # possibly caused by a bug (resource leak) in CircuitPython that manifests
     # after a sequence of ConnectionError exceptions thrown from withing the wifi module.
     # Should not happen given the above 'except ConnectionError',
     # however adding that here just in case.
-    hard_reset(e)
-except Exception as e:  # pylint: disable=broad-except
+    hard_reset(memory_error)
+except Exception as generic_exception:  # pylint: disable=broad-except
     # This assumes that such exceptions are quite rare.
     # Otherwise, this would drain the battery quickly by restarting
     # over and over in a quick succession.
     print("Code stopped by unhandled exception:")
-    print(traceback.format_exception(None, e, e.__traceback__))
+    print(
+        traceback.format_exception(
+            None, generic_exception, generic_exception.__traceback__
+        )
+    )
     RELOAD_TIME = 10
     print(f"Performing a supervisor reload in {RELOAD_TIME} seconds")
     time.sleep(RELOAD_TIME)
