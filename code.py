@@ -8,7 +8,6 @@ import traceback
 
 import adafruit_logging as logging
 import adafruit_ntp
-import adafruit_us100
 import board
 import busio
 import digitalio
@@ -19,6 +18,8 @@ import microcontroller
 import neopixel
 import supervisor
 import terminalio
+
+import adafruit_us100
 
 # For storing import exceptions so that they can be raised from main().
 IMPORT_EXCEPTION = None
