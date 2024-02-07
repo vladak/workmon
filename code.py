@@ -362,7 +362,7 @@ def main():
         # to increase the probability of getting the button presses.
         #
         if distance_stamp < time.monotonic_ns() - 10 * 1_000_000_000:
-            logger.debug(f"getting distance value")
+            logger.debug("getting distance value")
             distance = us100.distance
             logger.debug(f"got distance value: {distance}")
             table_state_val = handle_distance(distance, distance_threshold, mqtt_client)
