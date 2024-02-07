@@ -387,28 +387,15 @@ def main():
                 secrets.get(CO2_THRESH),
             )
             logger.debug(f"user data = {user_data}")
-            power = user_data.get(POWER)
-            if power:
-                if power > secrets.get(POWER_THRESH):
-                    logger.debug("power on")
 
-                    handle_table_state(
-                        blinker,
-                        display,
-                        image_tile_grid,
-                        table_state,
-                        table_state_val,
-                        user_data,
-                    )
-                else:
-                    logger.debug("power off")
-                    # Reset the table position tracking. If the display went off,
-                    # there was likely a work pause.
-                    # Do not set the user_data element to keep showing the last value.
-                    table_state.reset()
-                    blinker.set_blinking(False)
-            else:
-                logger.debug("power N/A")
+            handle_power(
+                blinker,
+                display,
+                image_tile_grid,
+                table_state,
+                table_state_val,
+                user_data,
+            )
         else:
             logger.debug("outside of working hours, setting the display off")
             display.brightness = 0
@@ -425,6 +412,40 @@ def main():
             logger.error(f"MQTT error: {mqtt_exception}")
             mqtt_client.reconnect()
             mqtt_client.loop(mqtt_loop_timeout)
+
+
+def handle_power(
+    blinker, display, image_tile_grid, table_state, table_state_val, user_data
+):
+    """
+    If power is on, handle the table state.
+    """
+
+    logger = logging.getLogger(__name__)
+
+    power = user_data.get(POWER)
+    if power is None:
+        logger.debug("power N/A")
+        return
+
+    if power > secrets.get(POWER_THRESH):
+        logger.debug("power on")
+
+        handle_table_state(
+            blinker,
+            display,
+            image_tile_grid,
+            table_state,
+            table_state_val,
+            user_data,
+        )
+    else:
+        logger.debug("power off")
+        # Reset the table position tracking. If the display went off,
+        # there was likely a work pause.
+        # Do not set the user_data element to keep showing the last value.
+        table_state.reset()
+        blinker.set_blinking(False)
 
 
 def handle_table_state(
