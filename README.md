@@ -52,7 +52,8 @@ The Rpi died suddenly and I found more fun "architecture" based on Adafruit Feat
 
 Install the Tapo app on a mobile phone. Register new account, remember the user ID and password as these will be necessary.
 
-Setup the plug so that it connects to dedicated (IoT) WiFi network.
+Setup the plug so that it connects to dedicated (IoT) WiFi network with static IP address.
+Set up and configure https://github.com/vladak/plug2mqtt/ to publish the state of the plug, notably the power consumption.
 
 ### Feather
 
