@@ -343,41 +343,29 @@ def main():
         buttons.append(button_io)
     button_pressed_stamp = 0
 
-    published_stamp = 0
+    distance_stamp = 0
     logger.debug("entering main loop")
+    table_state_val = None
     while True:
         button_values = [b.value for b in buttons]
         logger.debug(f"button values: {button_values}")
+        # TODO: for some reason only D0 press gets detected
         if False in button_values:
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
 
-        # TODO: getting distance makes the code sleep 2 * 2 * 0.1 seconds,
-        #       so this is not ideal for tight loop like this.
-        #       Make the code get the distance only every couple of seconds.
-        distance = us100.distance
-        if distance > distance_threshold:
-            table_state_val = "up"
-        else:
-            table_state_val = "down"
-        logger.debug(f"distance: {distance} cm (table {table_state_val})")
-        try:
-            # If the publish() fails with one of the exceptions below,
-            # reconnect will be attempted. The reconnect() will try number of times,
-            # so there is no point retrying here. The message to be published
-            # is not important anyway.
-            # Also, do not publish every iteration, only every 10 seconds or so.
-            if published_stamp < time.monotonic_ns() - 10 * 1_000_000_000:
-                mqtt_client.publish(
-                    secrets.get("mqtt_topic_distance"),
-                    json.dumps({"distance": distance}),
-                )
-                published_stamp = time.monotonic_ns()
-        except OSError as e:
-            logger.error(f"failed to publish MQTT message: {e}")
-            mqtt_client.reconnect()
-        except MQTT.MMQTTException as e:
-            logger.error(f"failed to publish MQTT message: {e}")
-            mqtt_client.reconnect()
+        #
+        # Getting distance from us100 makes the code sleep for up to 2 * 2 * 0.1 seconds,
+        # so this is not ideal for tight loop like this which needs to sample
+        # button presses fast enough to detect them.
+        # Therefore, get the distance only every 10 seconds,
+        # to increase the probability of getting the button presses.
+        #
+        if distance_stamp < time.monotonic_ns() - 10 * 1_000_000_000:
+            logger.debug(f"getting distance value")
+            distance = us100.distance
+            logger.debug(f"got distance value: {distance}")
+            table_state_val = handle_distance(distance, distance_threshold, mqtt_client)
+            distance_stamp = time.monotonic_ns()
 
         #
         # Leave the display on during certain hours unless a button is pressed.
@@ -402,26 +390,27 @@ def main():
                 if power > secrets.get(POWER_THRESH):
                     logger.debug("power on")
 
-                    table_state_duration = table_state.update(table_state_val)
-                    #
-                    # Implementation note:
-                    #   The table state is smuggled into the user_data
-                    #   (used to stored metrics received from MQTT)
-                    #   so that refresh_text() has more uniform argument types.
-                    #
-                    user_data.update({TABLE_STATE_DURATION: table_state_duration})
+                    if table_state_val is not None:
+                        table_state_duration = table_state.update(table_state_val)
+                        #
+                        # Implementation note:
+                        #   The table state is smuggled into the user_data
+                        #   (used to stored metrics received from MQTT)
+                        #   so that refresh_text() has more uniform argument types.
+                        #
+                        user_data.update({TABLE_STATE_DURATION: table_state_duration})
 
-                    #
-                    # Change the icon and set the neopixel to blinking
-                    # if table state exceeded the threshold.
-                    #
-                    icon_path = secrets.get(ICON_PATHS)[0]
-                    if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
-                        icon_path = secrets.get(ICON_PATHS)[1]
-                        blinker.set_blinking(True)
-                    else:
-                        blinker.set_blinking(False)
-                    display_icon(display, image_tile_grid, icon_path)
+                        #
+                        # Change the icon and set the neopixel to blinking
+                        # if table state duration exceeded the threshold.
+                        #
+                        icon_path = secrets.get(ICON_PATHS)[0]
+                        if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
+                            icon_path = secrets.get(ICON_PATHS)[1]
+                            blinker.set_blinking(True)
+                        else:
+                            blinker.set_blinking(False)
+                        display_icon(display, image_tile_grid, icon_path)
                 else:
                     logger.debug("power off")
                     # Reset the table position tracking. If the display went off,
@@ -443,10 +432,43 @@ def main():
 
         try:
             mqtt_client.loop(mqtt_loop_timeout)
-        except MQTT.MMQTTException as e:
-            logger.error(f"MQTT error: {e}")
+        except MQTT.MMQTTException as mqtt_exception:
+            logger.error(f"MQTT error: {mqtt_exception}")
             mqtt_client.reconnect()
             mqtt_client.loop(mqtt_loop_timeout)
+
+
+def handle_distance(distance, distance_threshold, mqtt_client):
+    """ "
+    publish distance to MQTT, determine the state based on threshold
+    :return: new table state value
+    """
+
+    logger = logging.getLogger(__name__)
+
+    if distance > distance_threshold:
+        table_state_val = "up"
+    else:
+        table_state_val = "down"
+    logger.debug(f"distance: {distance} cm (table {table_state_val})")
+
+    try:
+        # If the publish() fails with one of the exceptions below,
+        # reconnect will be attempted. The reconnect() will try number of times,
+        # so there is no point retrying here. The message to be published
+        # is not important anyway.
+        mqtt_client.publish(
+            secrets.get("mqtt_topic_distance"),
+            json.dumps({"distance": distance}),
+        )
+    except OSError as os_error:
+        logger.error(f"failed to publish MQTT message: {os_error}")
+        mqtt_client.reconnect()
+    except MQTT.MMQTTException as mqtt_exception:
+        logger.error(f"failed to publish MQTT message: {mqtt_exception}")
+        mqtt_client.reconnect()
+
+    return table_state_val
 
 
 def display_icon(display, tile_grid, icon_path):
