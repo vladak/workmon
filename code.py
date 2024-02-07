@@ -19,6 +19,7 @@ import neopixel
 import supervisor
 import terminalio
 
+# This relies on local import to work around https://github.com/adafruit/circuitpython/issues/8887
 import adafruit_us100
 
 # For storing import exceptions so that they can be raised from main().
