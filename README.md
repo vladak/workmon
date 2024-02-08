@@ -68,7 +68,21 @@ Solder the US-100 (in UART mode) per the US-100 guide.
 
 ### Prometheus
 
-TBD (MQTT)
+The Prometheus configuration needs to have the bits for the above mentioned pre-requisites.
+For the table distance the MQTT exporter configuration in `/etc/prometheus/mqtt-exporter.yaml` needs to be augmented
+with this section:
+```yaml
+metrics:
+  -
+    # The name of the metric in prometheus
+    prom_name: distance
+    # The name of the metric in a MQTT JSON message
+    mqtt_name: distance
+    # The prometheus help text for this metric
+    help: distance
+    # The prometheus type for this metric. Valid values are: "gauge" and "counter"
+    type: gauge
+```
 
 ### Grafana
 
