@@ -28,9 +28,9 @@ from adafruit_display_text import label
 import adafruit_us100
 from binarystate import BinaryState
 from blinker import Blinker
+from button import Button
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
-from button import Button
 
 # For storing import exceptions so that they can be raised from main().
 IMPORT_EXCEPTION = None
