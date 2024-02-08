@@ -30,6 +30,7 @@ from binarystate import BinaryState
 from blinker import Blinker
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
+from button import Button
 
 # For storing import exceptions so that they can be raised from main().
 IMPORT_EXCEPTION = None
@@ -336,19 +337,23 @@ def main():
 
     logger.info("Setting up buttons")
     buttons = []
-    for button in [board.D0, board.D1, board.D2]:
-        button_io = digitalio.DigitalInOut(button)
-        button_io.switch_to_input(pull=digitalio.Pull.UP)
-        buttons.append(button_io)
+    # The D1/D2 buttons are pulled LOW.
+    for pin, pull in [
+        (board.D0, digitalio.Pull.UP),
+        (board.D1, digitalio.Pull.DOWN),
+        (board.D2, digitalio.Pull.DOWN),
+    ]:
+        button = Button(pin, pull)
+        buttons.append(button)
     button_pressed_stamp = 0
 
     distance_stamp = 0
     logger.debug("entering main loop")
     table_state_val = None
     while True:
-        button_values = [b.value for b in buttons]
-        logger.debug(f"button values: {button_values}")
-        if False in button_values:
+        button_values = [b.pressed for b in buttons]
+        logger.debug(f"button pressed: {button_values}")
+        if True in button_values:
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
 
         #
