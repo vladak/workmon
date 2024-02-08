@@ -136,4 +136,6 @@ cp -R images/ *.py settings.toml /media/$USER/CIRCUITPY/
 - due to the very dynamic nature of the microcontroller ecosystem, the workarounds for various issues are omnipresent
   - I dislike having workarounds in place because such bloat accumulates over time and leads to non seamless upgrades, so I try to contribute to upstream.
 - it is nice to have a friend with a Dremel
+  - or a shared area with such tools
 - it is nice to be able to 3-D print stuff on demand
+  - totally possible thanks to [Prusa community](https://world.prusa3d.com/)
