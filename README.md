@@ -134,5 +134,6 @@ cp -R images/ *.py settings.toml /media/$USER/CIRCUITPY/
 
 - so far, with the state of CircruitPython at lest, microcontroller based projects are all about tight loops, e.g. in order to sample button pressed events. There are some actions that might shed some time from that loop, e.g. the US-100 distance reading might require up to 0.4 seconds
 - due to the very dynamic nature of the microcontroller ecosystem, the workarounds for various issues are omnipresent
+  - I dislike having workarounds in place because such bloat accumulates over time and leads to non seamless upgrades, so I try to contribute to upstream.
 - it is nice to have a friend with a Dremel
 - it is nice to be able to 3-D print stuff on demand
