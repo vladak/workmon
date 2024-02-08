@@ -124,7 +124,7 @@ secrets = {
 
 ## Install
 
-It assumes there are 2 images in the `images` directory. It will do fine without them, however the table position alerting will resort just to blinking the diode.
+It assumes there are 2 120x96 images in the `images` directory. It will do fine without them, however the table position alerting will resort just to blinking the diode.
 
 With [`circup`](https://github.com/adafruit/circup/) installed amd the Feather connected over USB (assuming Linux distro):
 ```
