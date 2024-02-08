@@ -68,12 +68,7 @@ Solder the US-100 (in UART mode) per the US-100 guide.
 
 ### Prometheus
 
-add this section under `scrape_configs` in `/etc/prometheus/prometheus.yml`:
-```yml
-  - job_name: workmon
-    static_configs:
-      - targets: ['workmon:8111']
-```
+TBD (MQTT)
 
 ### Grafana
 
