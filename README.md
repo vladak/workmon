@@ -21,8 +21,9 @@ My goal is to provide the following functionality:
 ## Hardware
 
 - [ReverseTFT Feather](https://www.adafruit.com/product/5691)
-- TP-link P110 smart WiFi socket
-  - to detect my presence in front of the computer. This works with sufficient degree of precision because my display has the saver set just to 3 minutes.
+- TP-link P110 smart WiFi plug
+  - my primary display is connected to this plug 
+  - this is used to detect my presence in front of the computer. This works with sufficient degree of precision because my display has the saver set just to 3 minutes.
     - while the presence could be detected in software, I wanted to avoid any changes whatsoever to the software of my company provided laptop. Other metrics such as light emitted by the display would not be as reliable.
 - [US-100 Ultrasonic Distance Sensor](https://www.adafruit.com/product/4019) connected directly (soldered) to the Feather
   - to determine if the table is up/down
