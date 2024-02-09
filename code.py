@@ -171,9 +171,12 @@ def refresh_text(
     prefix = "Tbl: "
     val = user_data.get(TABLE_STATE_DURATION)
     if val:
-        hrs = val // 3600
-        mins = (val % 3600) // 60
-        time_val = f"{hrs:02}:{mins:02}"
+        hours = val // 3600
+        minutes = (val % 3600) // 60
+        if hours > 24:
+            time_val = f"{hours // 24} days"
+        else:
+            time_val = f"{hours:02}:{minutes:02}"
         table_text = prefix + f"{time_val}"
     else:
         table_text = prefix + "N/A"
