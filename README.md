@@ -49,6 +49,10 @@ The Rpi died suddenly and I found more fun "architecture" based on Adafruit Feat
 
 ## Setup
 
+### NTP server
+
+The code assumes there is NTP server running and responding on the default IPv4 gateway.
+
 ### TP-link P110
 
 Install the Tapo app on a mobile phone. Register new account, remember the user ID and password as these will be necessary.
