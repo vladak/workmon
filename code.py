@@ -183,11 +183,22 @@ def refresh_text(
 
 def get_time(ntp):
     """
-    return current hour:minute or None
+    return current time from NTP as tuple hour, minute
     """
     logger = logging.getLogger(__name__)
 
-    current_time = ntp.datetime
+    current_time = None  # to silence a warning in IDEA
+    attempts = 3
+    for i in range(attempts):
+        try:
+            current_time = ntp.datetime
+            break
+        except OSError as os_error:
+            logger.warning(f"got OSError when getting NTP time: {os_error}")
+            if i == attempts - 1:
+                raise os_error
+            continue
+
     current_hour = current_time.tm_hour
     current_minute = current_time.tm_min
     logger.debug(f"time: {current_hour:2}:{current_minute:02}")
