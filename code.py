@@ -120,7 +120,7 @@ def on_message_with_power(mqtt, topic, msg):
         logger.error(f"failed to parse {msg}: {json_error}")
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals,too-many-branches
 def refresh_text(
     co2_value_area, text_area, user_data, last_update_threshold, co2_threshold
 ):
