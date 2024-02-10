@@ -142,6 +142,7 @@ cp -R images/ *.py settings.toml /media/$USER/CIRCUITPY/
 
 ## Lessons learned
 
+- monitoring work hours is dicey. It might feel good to put in the expected amount of work hours, however I was often tremendously productive (esp. in terms of quality of the output) when I worked less hours and made quality breaks.
 - so far, with the state of CircruitPython at least, microcontroller based projects are all about tight loops, e.g. in order to sample button pressed events.
   - There are some actions that might shed some time from that loop that are not so obvious, e.g. the US-100 distance reading might require up to 0.4 seconds
 - due to the very dynamic nature of the microcontroller ecosystem, the workarounds for various issues are omnipresent
