@@ -1,5 +1,5 @@
 """
-XXX
+workmon main code
 """
 
 import json
@@ -28,6 +28,7 @@ from adafruit_display_text import label
 from binarystate import BinaryState
 from blinker import Blinker
 from button import Button
+from timeutil import get_time
 from logutil import get_log_level
 from mqtt import mqtt_client_setup
 
@@ -181,31 +182,6 @@ def refresh_text(
         table_text = prefix + "N/A"
 
     text_area.text = f"{temp_text}\n{hum_text}\n{table_text}"
-
-
-def get_time(ntp):
-    """
-    return current time from NTP as tuple hour, minute
-    """
-    logger = logging.getLogger(__name__)
-
-    current_time = None  # to silence a warning in IDEA
-    attempts = 3
-    for i in range(attempts):
-        try:
-            current_time = ntp.datetime
-            break
-        except OSError as os_error:
-            logger.warning(f"got OSError when getting NTP time: {os_error}")
-            if i == attempts - 1:
-                raise os_error
-            continue
-
-    current_hour = current_time.tm_hour
-    current_minute = current_time.tm_min
-    logger.debug(f"time: {current_hour:2}:{current_minute:02}")
-
-    return current_hour, current_minute
 
 
 def hard_reset(exception):
