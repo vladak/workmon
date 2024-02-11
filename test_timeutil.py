@@ -10,7 +10,6 @@ import pytest
 
 from timeutil import dst_offset_eu, get_time
 
-
 testdata = [
     ((2024, 2, 10, 20, 12, 33, 5, 41, -1), 0),
     ((2024, 3, 31, 8, 1, 0, 6, 91, -1), 1),  # last Sunday in March
