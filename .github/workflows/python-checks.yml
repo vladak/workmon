@@ -41,3 +41,7 @@ jobs:
         run: |
           python3 -m pip install isort
           isort *.py  --check --diff
+      - name: Install pytest and run it
+        run: |
+          python3 -m pip install pytest
+          pytest -vvv
