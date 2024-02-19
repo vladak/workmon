@@ -111,7 +111,7 @@ secrets = {
     "log_level": "info",
     "mqtt_topic_env": "devices/pracovna/qtpy",
     "mqtt_topic_power": "devices/plug/pracovna",
-    "mqtt_topic_distance": "devices/pracovna/featherTFT",
+    "mqtt_topic": "devices/pracovna/featherTFT",
     "distance_threshold": 90,
     "power_threshold_watts": 35,
     "co2_threshold": 1000,

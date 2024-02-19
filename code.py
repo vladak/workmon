@@ -55,6 +55,7 @@ TEXT_COLOR_ALERT = 0xFF0000
 
 BROKER_PORT = "broker_port"
 LOG_TOPIC = "log_topic"
+MQTT_TOPIC = "mqtt_topic"
 MQTT_TOPIC_ENV = "mqtt_topic_env"
 MQTT_TOPIC_POWER = "mqtt_topic_power"
 BROKER = "broker"
@@ -70,6 +71,7 @@ TABLE_STATE_DUR_THRESH = "table_state_dur_threshold"
 MANDATORY_SECRETS = [
     BROKER,
     BROKER_PORT,
+    MQTT_TOPIC,
     MQTT_TOPIC_POWER,
     MQTT_TOPIC_ENV,
     PASSWORD,
@@ -385,6 +387,8 @@ def main():
                 table_state,
                 table_state_val,
                 user_data,
+                mqtt_client,
+                secrets.get(MQTT_TOPIC),
             )
         else:
             logger.debug("outside of working hours, setting the display off")
@@ -406,7 +410,14 @@ def main():
 
 # pylint: disable=too-many-arguments
 def handle_power(
-    blinker, display, image_tile_grid, table_state, table_state_val, user_data
+    blinker,
+    display,
+    image_tile_grid,
+    table_state,
+    table_state_val,
+    user_data,
+    mqtt_client,
+    topic,
 ):
     """
     If power is on, handle the table state.
@@ -422,6 +433,7 @@ def handle_power(
     if power > secrets.get(POWER_THRESH):
         logger.debug("power on")
 
+        # pylint: disable=too-many-function-args
         handle_table_state(
             blinker,
             display,
@@ -429,6 +441,8 @@ def handle_power(
             table_state,
             table_state_val,
             user_data,
+            mqtt_client,
+            topic,
         )
     else:
         logger.debug("power off")
@@ -441,7 +455,14 @@ def handle_power(
 
 # pylint: disable=too-many-arguments
 def handle_table_state(
-    blinker, display, image_tile_grid, table_state, table_state_val, user_data
+    blinker,
+    display,
+    image_tile_grid,
+    table_state,
+    table_state_val,
+    user_data,
+    mqtt_client,
+    topic,
 ):
     """
     change the image based on table state duration
@@ -458,6 +479,9 @@ def handle_table_state(
     #
     user_data.update({TABLE_STATE_DURATION: table_state_duration})
 
+    if user_data.get("annotation_sent") is None:
+        user_data["annotation_sent"] = 0
+
     #
     # Change the icon and set the neopixel to blinking
     # if table state duration exceeded the threshold.
@@ -466,8 +490,17 @@ def handle_table_state(
     if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
         icon_path = secrets.get(ICON_PATHS)[1]
         blinker.set_blinking(True)
+        if (
+            user_data.get("annotation_sent") // 1_000_000_000
+            < time.monotonic_ns() // 1_000_000_000 - table_state_duration
+        ):
+            mqtt_client.publish(
+                topic, json.dumps({"annotation": True, "tags": ["table_duration"]})
+            )
+            user_data["annotation_sent"] = time.monotonic_ns()
     else:
         blinker.set_blinking(False)
+        user_data["annotation_sent"] = 0
     display_icon(display, image_tile_grid, icon_path)
 
 
@@ -491,7 +524,7 @@ def handle_distance(distance, distance_threshold, mqtt_client):
         # so there is no point retrying here. The message to be published
         # is not important anyway.
         mqtt_client.publish(
-            secrets.get("mqtt_topic_distance"),
+            secrets.get(MQTT_TOPIC),
             json.dumps({"distance": distance}),
         )
     except OSError as os_error:
