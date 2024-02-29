@@ -123,6 +123,7 @@ secrets = {
     "table_state_dur_threshold": 1800,
     "start_hr": 8,
     "end_hr": 23,
+    "font_file_name": "fonts/Inter-Regular-25.pcf",
 }
 ```
 
@@ -133,12 +134,20 @@ It assumes there are 2 120x96 images in the `images` directory. It will do fine 
 With [`circup`](https://github.com/adafruit/circup/) installed amd the Feather connected over USB (assuming Linux distro):
 ```
 circup install -r requirements.txt
-cp -R images/ *.py settings.toml /media/$USER/CIRCUITPY/
+cp -R images/ fonts/ *.py settings.toml /media/$USER/CIRCUITPY/
 ```
+
+## Generating bitmap font
+
+1. grab the fonts from https://rsms.me/inter/
+2. convert the `extras/ttf/Inter-Regular.ttf` into BDF (use 25 pixels size) using https://fontforge.github.io/
+3. convert the BDF into PCF for smaller size using https://adafruit.github.io/web-bdftopcf/
+4. copy the resulting file to the `CIRCUITPY` directory
 
 ## Guides:
 
 - US-100: https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/python-circuitpython
+- fonts: https://learn.adafruit.com/custom-fonts-for-pyportal-circuitpython-display/
 
 ## Lessons learned
 

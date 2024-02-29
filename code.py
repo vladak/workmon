@@ -23,6 +23,7 @@ import neopixel
 import socketpool
 import supervisor
 import terminalio
+from adafruit_bitmap_font import bitmap_font
 from adafruit_display_text import label
 
 from binarystate import BinaryState
@@ -49,7 +50,6 @@ except ImportError:
 
 # First set some parameters used for shapes and text
 BORDER = 5
-FONTSCALE = 2
 TEXT_COLOR_BASE = 0xFFFF00
 TEXT_COLOR_ALERT = 0xFF0000
 
@@ -67,6 +67,7 @@ POWER_THRESH = "power_threshold_watts"
 LAST_UPDATE_THRESH = "last_update_threshold"
 CO2_THRESH = "co2_threshold"
 TABLE_STATE_DUR_THRESH = "table_state_dur_threshold"
+FONT_FILE_NAME = "font_file_name"
 
 MANDATORY_SECRETS = [
     BROKER,
@@ -81,6 +82,7 @@ MANDATORY_SECRETS = [
     LAST_UPDATE_THRESH,
     CO2_THRESH,
     TABLE_STATE_DUR_THRESH,
+    FONT_FILE_NAME,
 ]
 
 CO2 = "co2"
@@ -89,6 +91,10 @@ HUMIDITY = "humidity"
 POWER = "power"
 LAST_UPDATE = "time"
 TABLE_STATE_DURATION = "table_state_duration"
+
+TEMP_PREFIX = "Temp: "
+HUM_PREFIX = "Hum: "
+TBL_PREFIX = "Tbl: "
 
 
 def on_message_with_env_metrics(mqtt, topic, msg):
@@ -123,9 +129,15 @@ def on_message_with_power(mqtt, topic, msg):
         logger.error(f"failed to parse {msg}: {json_error}")
 
 
-# pylint: disable=too-many-locals,too-many-branches
+# pylint: disable=too-many-locals,too-many-branches,too-many-arguments
 def refresh_text(
-    co2_value_area, text_area, user_data, last_update_threshold, co2_threshold
+    co2_value_area,
+    temp_area,
+    hum_area,
+    tbl_area,
+    user_data,
+    last_update_threshold,
+    co2_threshold,
 ):
     """
     change the contents of the text label used to draw on the display
@@ -156,21 +168,23 @@ def refresh_text(
     else:
         co2_value_area.text = "N/A"
 
-    prefix = "Temp: "
+    prefix = TEMP_PREFIX
     temp = user_data.get(TEMPERATURE)
     if temp:
         temp_text = prefix + f"{temp}°C"
     else:
         temp_text = prefix + "N/A"
+    temp_area.text = temp_text
 
-    prefix = "Hum: "
+    prefix = HUM_PREFIX
     val = user_data.get(HUMIDITY)
     if val:
         hum_text = prefix + f"{val}%"
     else:
         hum_text = prefix + "N/A"
+    hum_area.text = hum_text
 
-    prefix = "Tbl: "
+    prefix = TBL_PREFIX
     val = user_data.get(TABLE_STATE_DURATION)
     if val:
         hours = val // 3600
@@ -182,8 +196,7 @@ def refresh_text(
         table_text = prefix + f"{time_val}"
     else:
         table_text = prefix + "N/A"
-
-    text_area.text = f"{temp_text}\n{hum_text}\n{table_text}"
+    tbl_area.text = table_text
 
 
 def hard_reset(exception):
@@ -224,6 +237,35 @@ def mqtt_setup(pool, user_data, mqtt_log_level, socket_timeout):
     logger.info(f"subscribing to {topic}")
     mqtt_client.subscribe(topic)
     return mqtt_client
+
+
+def get_font(file_name):
+    """
+    Try to load a bitmap font. If not successful, fall back to terminal font.
+    Return font and font and border scale factor.
+    """
+
+    logger = logging.getLogger(__name__)
+
+    font = terminalio.FONT
+    try:
+        font_scale = 1
+        border_scale = 2
+        font_file = file_name
+        logger.debug(f"loading font from {font_file}")
+        font = bitmap_font.load_font(font_file)
+        font.load_glyphs(
+            # pylint: disable=line-too-long
+            code_points="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890- ().,:!?/\\%+@~"
+        )
+        font.load_glyphs("°³µ₂")  # preload glyphs for fast printing
+    # pylint: disable=broad-exception-caught
+    except Exception as exception:
+        border_scale = 1
+        font_scale = 2
+        logger.warning(f"Cannot load bitmap font, will use terminal font: {exception}")
+
+    return font, font_scale, border_scale
 
 
 # pylint: disable=too-many-locals,too-many-statements
@@ -294,31 +336,56 @@ def main():
     if image_tile_grid:
         splash.append(image_tile_grid)
 
-    # Subgroup for text scaling
+    font, font_scale, border_scale = get_font(secrets.get(FONT_FILE_NAME))
+
+    # Subgroup for text scaling can be created only once a font is determined,
+    # because scaling depends on the chosen font.
     text_group = displayio.Group(
-        scale=FONTSCALE,
+        scale=font_scale,
     )
     splash.append(text_group)
 
-    text = "CO2: "
-    co2_prefix_area = label.Label(terminalio.FONT, text=text, color=TEXT_COLOR_BASE)
+    # The CO2 text has 2 groups so that the value can be displayed in different color.
+    if font is terminalio.FONT:
+        text = "CO2: "
+    else:
+        text = "CO₂: "
+    co2_prefix_area = label.Label(font, text=text, color=TEXT_COLOR_BASE)
     co2_prefix_area.anchor_point = (0, 0)
     co2_prefix_area.anchored_position = (BORDER, BORDER)
     text_group.append(co2_prefix_area)
 
-    co2_value_area = label.Label(terminalio.FONT, text="", color=TEXT_COLOR_BASE)
+    co2_value_area = label.Label(font, text="", color=TEXT_COLOR_BASE)
     co2_value_area.anchor_point = (0, 0)
     co2_value_area.anchored_position = (
         BORDER + co2_prefix_area.bounding_box[2],
         BORDER,
     )
+    y_offset = co2_prefix_area.bounding_box[3]
     text_group.append(co2_value_area)
 
-    # remaining text
-    text_area = label.Label(terminalio.FONT, text="", color=TEXT_COLOR_BASE)
-    text_area.anchor_point = (0, 0)
-    text_area.anchored_position = (BORDER, 2 * BORDER + co2_prefix_area.bounding_box[3])
-    text_group.append(text_area)
+    temp_area = label.Label(font, text=TEMP_PREFIX, color=TEXT_COLOR_BASE)
+    temp_area.anchor_point = (0, 0)
+    if border_scale > 1:
+        border_scale += 2
+    temp_area.anchored_position = (BORDER, BORDER * border_scale + y_offset)
+    y_offset += temp_area.bounding_box[3]
+    text_group.append(temp_area)
+
+    hum_area = label.Label(font, text=HUM_PREFIX, color=TEXT_COLOR_BASE)
+    hum_area.anchor_point = (0, 0)
+    if border_scale > 1:
+        border_scale += 2
+    hum_area.anchored_position = (BORDER, BORDER * border_scale + y_offset)
+    y_offset += hum_area.bounding_box[3]
+    text_group.append(hum_area)
+
+    tbl_area = label.Label(font, text=TBL_PREFIX, color=TEXT_COLOR_BASE)
+    tbl_area.anchor_point = (0, 0)
+    if border_scale > 1:
+        border_scale += 2
+    tbl_area.anchored_position = (BORDER, BORDER * border_scale + y_offset)
+    text_group.append(tbl_area)
 
     start_hr = secrets.get("start_hr")
     end_hr = secrets.get("end_hr")
@@ -373,7 +440,9 @@ def main():
             display.brightness = 1
             refresh_text(
                 co2_value_area,
-                text_area,
+                temp_area,
+                hum_area,
+                tbl_area,
                 user_data,
                 secrets.get(LAST_UPDATE_THRESH),
                 secrets.get(CO2_THRESH),
