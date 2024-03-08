@@ -148,6 +148,9 @@ cp -R images/ fonts/ *.py settings.toml /media/$USER/CIRCUITPY/
 
 ## Generating bitmap font
 
+Using bitmap fonts makes the display more readable and nicer. Also, some of the glyps like the circle in °C can be actually displayed.
+The font however has to be converted to fit onto the flash and then it has to be used in a special way for quick display.
+
 1. grab the fonts from https://rsms.me/inter/
 2. convert the `extras/ttf/Inter-Regular.ttf` into BDF (use 25 pixels size) using https://fontforge.github.io/
 3. convert the BDF into PCF for smaller size using https://adafruit.github.io/web-bdftopcf/
