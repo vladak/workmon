@@ -30,6 +30,7 @@ My goal is to provide the following functionality:
 - iPhone headphones transparent plastic box used as a housing for the distance sensor
   - to be mounted underneath the table at the back in order not to cause measurement interference with my legs/chair etc.
 - [QtPy](https://learn.adafruit.com/adafruit-qt-py) with temperature/humidity and CO2 sensors
+  - running the code from my [shield project](https://github.com/vladak/shield)
   - publishing messages with the metrics to a MQTT topic. The Feather will subscribe to the topic and handle the values.
 - [3D printed stand](https://learn.adafruit.com/stand-for-feather-esp32-with-reverse-tft)
 
