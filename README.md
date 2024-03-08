@@ -33,6 +33,8 @@ My goal is to provide the following functionality:
   - publishing messages with the metrics to a MQTT topic. The Feather will subscribe to the topic and handle the values.
 - [3D printed stand](https://learn.adafruit.com/stand-for-feather-esp32-with-reverse-tft)
 
+This is the 2nd version. See below for older versions.
+
 ## Features
 
 - by default a set of metrics is displayed: CO2, tmperature, humidity and the duration of the current table position. Also, image is displayed if available.
@@ -44,8 +46,14 @@ My goal is to provide the following functionality:
 
 ## History
 
-Originally, this was based on a Raspberry Pi with USB hub to connect the distance reader and a light bulb with 3 lights.
-The Rpi died suddenly and I found more fun "architecture" based on Adafruit Feather.
+Originally, this was based on a Raspberry Pi with a directly attached USB hub to connect the distance reader and 
+a [light bulb with 3 lights](https://www.adafruit.com/product/5127) which was used to do the alerting.
+The ultrasonic distance sensor was placed in original iPhone plastic box (the one with the transparent cover) with two holes for the sensor.
+The Rpi died suddenly and I found more fun "architecture" based on microcontrollers.
+
+Also, I believe the placement of the distance sensor was causing [value flapping](https://github.com/vladak/workmon/issues/10). 
+It was attached with double sticky tape the white cable holder underneath the table on the right side and was not fully in horizontal position which is 
+possibly made it to get erroneous readings. Another possibility is some interaction with the Linux running on the Raspberry Pi.
 
 ## Setup
 
