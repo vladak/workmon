@@ -36,6 +36,11 @@ My goal is to provide the following functionality:
 
 This is the 2nd version. See below for older versions.
 
+<img src="img/parts.jpg" alt="some of the parts" width="400"/>
+<img src="img/back.jpg" alt="back of the Feather" width="400"/>
+<img src="img/table.jpg" alt="ultrasonic sensor mounted underneath the table" width="400"/>
+<img src="img/front.jpg" alt="front side" width="400"/>
+
 ## Features
 
 - by default a set of metrics is displayed: CO2, tmperature, humidity and the duration of the current table position. Also, image is displayed if available.
