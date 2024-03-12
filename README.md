@@ -116,7 +116,7 @@ Perform the following setup on the **Grafana server**:
 
 The `secrets.py` should look like this:
 
-```yaml
+```python
 secrets = {
     "SSID": "FOO",
     "password": "XYZ",
@@ -130,6 +130,7 @@ secrets = {
     "power_threshold_watts": 35,
     "co2_threshold": 1000,
     "last_update_threshold": 60,
+    "break_threshold_seconds": 2700,
     "icon_paths": [
         "/images/icons8-totoro-120.bmp",
         "/images/icons8-totoro-120-umbrella.bmp",

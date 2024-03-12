@@ -64,6 +64,7 @@ SSID = "SSID"
 LOG_LEVEL = "log_level"
 ICON_PATHS = "icon_paths"
 POWER_THRESH = "power_threshold_watts"
+BREAK_THRESH = "break_threshold_seconds"
 LAST_UPDATE_THRESH = "last_update_threshold"
 CO2_THRESH = "co2_threshold"
 TABLE_STATE_DUR_THRESH = "table_state_dur_threshold"
@@ -83,6 +84,7 @@ MANDATORY_SECRETS = [
     CO2_THRESH,
     TABLE_STATE_DUR_THRESH,
     FONT_FILE_NAME,
+    BREAK_THRESH,
 ]
 
 CO2 = "co2"
@@ -424,6 +426,7 @@ def main():
 
     distance_threshold = secrets.get("distance_threshold")
     table_state = BinaryState()
+    power_state = BinaryState()
 
     logger.info("Setting up buttons")
     buttons = []
@@ -488,6 +491,7 @@ def main():
                 image_tile_grid,
                 table_state,
                 table_state_val,
+                power_state,
                 user_data,
                 mqtt_client,
                 secrets.get(MQTT_TOPIC),
@@ -517,6 +521,7 @@ def handle_power(
     image_tile_grid,
     table_state,
     table_state_val,
+    power_state,
     user_data,
     mqtt_client,
     topic,
@@ -535,6 +540,11 @@ def handle_power(
     if power > secrets.get(POWER_THRESH):
         logger.debug("power on")
 
+        power_duration = power_state.update("on")
+        logger.debug(f"power has been on for {power_duration} seconds")
+        if power_duration > secrets.get(BREAK_THRESH):
+            blinker.set_blinking(True, GREEN)
+
         # pylint: disable=too-many-function-args
         handle_table_state(
             blinker,
@@ -552,6 +562,8 @@ def handle_power(
         # there was likely a work pause.
         # Do not set the user_data element to keep showing the last value.
         table_state.reset()
+        power_state.update("off")
+        blinker.set_blinking(False, GREEN)
         blinker.set_blinking(False, BLUE)
 
 
