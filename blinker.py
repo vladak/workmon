@@ -14,6 +14,8 @@ class Blinker:
 
     The class is not ready to be used in multiple instances for the same neopixel.
     Assumes that update() will be called more frequently than the value of the duration parameter.
+
+    Not thread safe.
     """
 
     def __init__(self, pixel, brightness=0.5, duration=0.5):
@@ -27,16 +29,20 @@ class Blinker:
         self._binary_state = BinaryState()
         self._is_on = False
 
-    def set_blinking(self, is_blinking: bool, color=(255, 0, 0)):
+        self.is_blinking = False
+        self.color = None
+
+    def set_blinking(self, is_blinking: bool, color=None):
         """
         Let the Neo pixel be on in color and the duration specified in the init function.
-        The default color is red.
         """
         logger = logging.getLogger(__name__)
 
         logger.debug(f"blinking -> {is_blinking}")
+        self.is_blinking = is_blinking
 
-        if is_blinking:
+        if self.is_blinking:
+            self.color = color
             duration = self._binary_state.update(self._is_on)
             logger.debug(f"state {self._is_on} duration {duration}")
             if duration > self.duration:
@@ -46,10 +52,13 @@ class Blinker:
                 self._is_on = not self._is_on
                 if self._is_on:
                     self.pixel.brightness = self.brightness
-                    self.pixel.fill(color)
+                    self.pixel.fill(self.color)
                 else:
                     self.pixel.brightness = 0
         else:
-            self.pixel.brightness = 0
-            self._is_on = False
-            self._binary_state.reset()
+            # If the color argument is specified, it has to match the current color.
+            if color is None or self.color == color:
+                self.pixel.brightness = 0
+                self._is_on = False
+                self.color = None
+                self._binary_state.reset()

@@ -96,7 +96,12 @@ TEMP_PREFIX = "Temp: "
 HUM_PREFIX = "Hum: "
 TBL_PREFIX = "Tbl: "
 
-BLUE = (0, 0, 255)
+RED = (255, 0, 0)  # CO2 alert
+GREEN = (0, 255, 0)  # break alert
+BLUE = (0, 0, 255)  # table alert
+
+# Higher number means higher priority.
+COLOR_PRIORITY = {RED: 30, GREEN: 20, BLUE: 10}
 
 
 def on_message_with_env_metrics(mqtt, topic, msg):
@@ -131,6 +136,27 @@ def on_message_with_power(mqtt, topic, msg):
         logger.error(f"failed to parse {msg}: {json_error}")
 
 
+def has_priority(color_current, color_new):
+    """
+    Check whether new color has precedence over the current color.
+    """
+    if color_current == color_new:
+        return True
+
+    return COLOR_PRIORITY.get(color_new) > COLOR_PRIORITY.get(color_current)
+
+
+def can_blink(blinker, color):
+    """
+    Check whether the blinker can blink with given color based on its state
+    and color priority.
+    """
+    if not blinker.is_blinking:
+        return True
+
+    return has_priority(blinker.color, color)
+
+
 # pylint: disable=too-many-locals,too-many-branches,too-many-arguments
 def refresh_text(
     co2_value_area,
@@ -140,6 +166,7 @@ def refresh_text(
     user_data,
     last_update_threshold,
     co2_threshold,
+    blinker,
 ):
     """
     change the contents of the text label used to draw on the display
@@ -165,8 +192,11 @@ def refresh_text(
         if int(co2_value) > co2_threshold:
             logger.debug(f"CO2 above threshold ({co2_value} > {co2_threshold})")
             co2_value_area.color = TEXT_COLOR_ALERT
+            if can_blink(blinker, RED):
+                blinker.set_blinking(True, color=RED)
         else:
             co2_value_area.color = TEXT_COLOR_BASE
+            blinker.set_blinking(False, color=RED)
     else:
         co2_value_area.text = "N/A"
 
@@ -448,6 +478,7 @@ def main():
                 user_data,
                 secrets.get(LAST_UPDATE_THRESH),
                 secrets.get(CO2_THRESH),
+                blinker,
             )
             logger.debug(f"user data = {user_data}")
 
@@ -521,7 +552,7 @@ def handle_power(
         # there was likely a work pause.
         # Do not set the user_data element to keep showing the last value.
         table_state.reset()
-        blinker.set_blinking(False)
+        blinker.set_blinking(False, BLUE)
 
 
 # pylint: disable=too-many-arguments
@@ -560,7 +591,10 @@ def handle_table_state(
     icon_path = secrets.get(ICON_PATHS)[0]
     if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
         icon_path = secrets.get(ICON_PATHS)[1]
-        blinker.set_blinking(True, color=BLUE)
+
+        if can_blink(blinker, BLUE):
+            blinker.set_blinking(True, color=BLUE)
+
         if (
             user_data.get("annotation_sent") // 1_000_000_000
             < time.monotonic_ns() // 1_000_000_000 - table_state_duration
@@ -570,13 +604,13 @@ def handle_table_state(
             )
             user_data["annotation_sent"] = time.monotonic_ns()
     else:
-        blinker.set_blinking(False)
+        blinker.set_blinking(False, color=BLUE)
         user_data["annotation_sent"] = 0
     display_icon(display, image_tile_grid, icon_path)
 
 
 def handle_distance(distance, distance_threshold, mqtt_client):
-    """ "
+    """
     publish distance to MQTT, determine the state based on threshold
     :return: new table state value
     """
