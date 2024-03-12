@@ -16,21 +16,21 @@ class Blinker:
     Assumes that update() will be called more frequently than the value of the duration parameter.
     """
 
-    def __init__(self, pixel, brightness=0.5, duration=0.5, color=(0, 0, 255)):
+    def __init__(self, pixel, brightness=0.5, duration=0.5):
         """
         initialize the Blinker object
         """
         self.pixel = pixel
         self.brightness = brightness
         self.duration = duration
-        self.color = color
 
         self._binary_state = BinaryState()
         self._is_on = False
 
-    def set_blinking(self, is_blinking: bool):
+    def set_blinking(self, is_blinking: bool, color=(255, 0, 0)):
         """
         Let the Neo pixel be on in color and the duration specified in the init function.
+        The default color is red.
         """
         logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class Blinker:
                 self._is_on = not self._is_on
                 if self._is_on:
                     self.pixel.brightness = self.brightness
-                    self.pixel.fill(self.color)
+                    self.pixel.fill(color)
                 else:
                     self.pixel.brightness = 0
         else:

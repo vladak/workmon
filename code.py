@@ -96,6 +96,8 @@ TEMP_PREFIX = "Temp: "
 HUM_PREFIX = "Hum: "
 TBL_PREFIX = "Tbl: "
 
+BLUE = (0, 0, 255)
+
 
 def on_message_with_env_metrics(mqtt, topic, msg):
     """
@@ -558,7 +560,7 @@ def handle_table_state(
     icon_path = secrets.get(ICON_PATHS)[0]
     if table_state_duration > secrets.get(TABLE_STATE_DUR_THRESH):
         icon_path = secrets.get(ICON_PATHS)[1]
-        blinker.set_blinking(True)
+        blinker.set_blinking(True, color=BLUE)
         if (
             user_data.get("annotation_sent") // 1_000_000_000
             < time.monotonic_ns() // 1_000_000_000 - table_state_duration
