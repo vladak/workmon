@@ -36,10 +36,10 @@ My goal is to provide the following functionality:
 
 This is the 2nd version. See below for older versions.
 
-<img src="img/parts.jpg" alt="some of the parts" width="400"/>
-<img src="img/back.jpg" alt="back of the Feather" width="400"/>
-<img src="img/table.jpg" alt="ultrasonic sensor mounted underneath the table" width="400"/>
-<img src="img/front.jpg" alt="front side" width="400"/>
+<img src="img/parts.jpg" alt="some of the parts" width="404"/>
+<img src="img/back.jpg" alt="back of the Feather" width="496"/>
+<img src="img/table.jpg" alt="ultrasonic sensor mounted underneath the table" width="399"/>
+<img src="img/front.jpg" alt="front side" width="601"/>
 
 ## Features
 
