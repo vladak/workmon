@@ -609,10 +609,10 @@ def handle_table_state(
     display_icon(display, image_tile_grid, icon_path)
 
 
-def handle_distance(distance, distance_threshold, mqtt_client):
+def handle_distance(distance, distance_threshold, mqtt_client) -> str:
     """
     publish distance to MQTT, determine the state based on threshold
-    :return: new table state value
+    :return: new table state value ("up" or "down")
     """
 
     logger = logging.getLogger(__name__)
