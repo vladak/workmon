@@ -29,6 +29,8 @@ My goal is to provide the following functionality:
   - to determine if the table is up/down
 - iPhone headphones transparent plastic box used as a housing for the distance sensor
   - to be mounted underneath the table at the back in order not to cause measurement interference with my legs/chair etc.
+- 4-strand phone cable to connect the distance sensor to the Feather
+  - originally I wanted the cable to be split and outfitted with RJ11 connectors and connected using a connecting piece so that the sensor can be easily disconnected, however this connection turned out to be flaky so in the end I soldered it.
 - [QtPy](https://learn.adafruit.com/adafruit-qt-py) with temperature/humidity and CO2 sensors
   - running the code from my [shield project](https://github.com/vladak/shield)
   - publishing messages with the metrics to a MQTT topic. The Feather will subscribe to the topic and handle the values.
