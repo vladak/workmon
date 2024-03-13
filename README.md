@@ -47,10 +47,14 @@ This is the 2nd version. See below for older versions.
 
 - by default a set of metrics is displayed: CO2, tmperature, humidity and the duration of the current table position. Also, image is displayed if available.
 - The CO2 metric displayed will turn red if the value is greater than a configured threshold.
-- If the table is in the same position for too long (configurable), the image will be changed and the neopixel on the back side will start blinking blue.
+  - also, the Neopixel on the back side will start blinking red
+- If the table is in the same position for too long (configurable) while the monitored power is on, the image will be changed and the neopixel on the back side will start blinking blue.
   - the table state tracking depends on the monitored power to be above certain threshold (i.e. **computer** display being on)
+- If the monitored power is on longer than configured threshold, the neopixel will start blinking green.
 - the display is on only during certain hours (configurable)
 - if the display is off, pushing any D0/D1/D2 button will turn it on for a minute.
+
+The blinking of the neopixel is prioritized so that it will blink with the color corresponding to the highest priority alert.
 
 ## History
 
