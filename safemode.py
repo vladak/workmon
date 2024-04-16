@@ -1,3 +1,6 @@
+"""
+safe mode handling
+"""
 import microcontroller
 import supervisor
 
