@@ -181,6 +181,8 @@ The font however has to be converted to fit onto the flash and then it has to be
 - due to the very dynamic nature of the microcontroller ecosystem, the workarounds for various issues are omnipresent
   - I dislike having workarounds in place because such bloat accumulates over time and leads to non seamless upgrades, so I try to contribute to upstream.
   - On the other hand, chasing bugs in the underlying ROTS operating system costs lots of time and effort so sometimes it is wise to just reset the microcontroller via [`safemode.py`](https://learn.adafruit.com/circuitpython-safe-mode/safemode-py) and drive on, esp. for these non-critical projects.
+- like with any Python code, scrubbing the code with tools (black/pylint/flake8/isort) prevents some issues during the runtime, but here it is even more important because runtime troubleshooting might involve tinkering with the hardware which costs extra time
+  - some level of testing, where possible, is also handy, for the same reason.
 - it is nice to have a friend with a Dremel
   - or a shared area with such tools
 - it is nice to be able to 3-D print stuff on demand
