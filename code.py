@@ -340,7 +340,7 @@ def main():
 
     user_data = {}
     # The timeout has to be so low for the main loop to record button presses.
-    mqtt_loop_timeout = 0.05
+    mqtt_loop_timeout = 0.01
     # pylint: disable=no-member
     mqtt_client = mqtt_setup(pool, user_data, logging.ERROR, mqtt_loop_timeout)
 
@@ -444,9 +444,12 @@ def main():
     logger.debug("entering main loop")
     table_state_val = None
     while True:
+        for b in buttons:
+            b.update()
         button_values = [b.pressed for b in buttons]
         logger.debug(f"button pressed: {button_values}")
         if True in button_values:
+            logger.info("XXX pressed")
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
 
         #
@@ -462,6 +465,9 @@ def main():
             logger.debug(f"got distance value: {distance}")
             table_state_val = handle_distance(distance, distance_threshold, mqtt_client)
             distance_stamp = time.monotonic_ns()
+
+        for b in buttons:
+            b.update()
 
         #
         # Leave the display on during certain hours unless a button is pressed.
@@ -505,6 +511,9 @@ def main():
             user_data[TABLE_STATE_DURATION] = None
 
             blinker.set_blinking(False)
+
+        for b in buttons:
+            b.update()
 
         try:
             mqtt_client.loop(mqtt_loop_timeout)

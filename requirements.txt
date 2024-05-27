@@ -5,3 +5,4 @@ adafruit-circuitpython-display_text
 adafruit-circuitpython-ntp
 adafruit-circuitpython-neopixel
 adafruit-circuitpython-us100>=1.1.17
+adafruit-circuitpython-debouncer
