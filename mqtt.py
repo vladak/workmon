@@ -65,3 +65,26 @@ def mqtt_client_setup(pool, broker, port, log_level, user_data=None, socket_time
     mqtt_client.on_publish = publish
 
     return mqtt_client
+
+
+def mqtt_publish_robust(mqtt_client, mqtt_topic, data):
+    """
+    publish message to MQTT broker. Reconnect on error.
+    """
+    logger = logging.getLogger(MQTT_LOGGER_NAME)
+
+    try:
+        # If the publish() fails with one of the exceptions below,
+        # reconnect will be attempted. The reconnect() will try number of times,
+        # so there is no point retrying here. The message to be published
+        # is not important anyway.
+        mqtt_client.publish(
+            mqtt_topic,
+            data,
+        )
+    except OSError as os_error:
+        logger.error(f"failed to publish MQTT message: {os_error}")
+        mqtt_client.reconnect()
+    except MQTT.MMQTTException as mqtt_exception:
+        logger.error(f"failed to publish MQTT message: {mqtt_exception}")
+        mqtt_client.reconnect()

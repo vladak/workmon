@@ -30,7 +30,7 @@ from binarystate import BinaryState
 from blinker import Blinker
 from button import Button
 from logutil import get_log_level
-from mqtt import mqtt_client_setup
+from mqtt import mqtt_client_setup, mqtt_publish_robust
 from timeutil import get_time
 
 # For storing import exceptions so that they can be raised from main().
@@ -343,6 +343,7 @@ def main():
     mqtt_loop_timeout = 0.05
     # pylint: disable=no-member
     mqtt_client = mqtt_setup(pool, user_data, logging.ERROR, mqtt_loop_timeout)
+    mqtt_topic = secrets.get(MQTT_TOPIC)
 
     logger.debug("setting NTP up")
     # The code is supposed to be running in specific time zone
@@ -460,7 +461,9 @@ def main():
             logger.debug("getting distance value")
             distance = us100.distance
             logger.debug(f"got distance value: {distance}")
-            table_state_val = handle_distance(distance, distance_threshold, mqtt_client)
+            table_state_val = handle_distance(
+                distance, distance_threshold, mqtt_client, mqtt_topic
+            )
             distance_stamp = time.monotonic_ns()
 
         #
@@ -494,7 +497,7 @@ def main():
                 power_state,
                 user_data,
                 mqtt_client,
-                secrets.get(MQTT_TOPIC),
+                mqtt_topic,
             )
         else:
             logger.debug("outside of working hours, setting the display off")
@@ -508,6 +511,9 @@ def main():
 
         try:
             mqtt_client.loop(mqtt_loop_timeout)
+        except OSError as os_error:
+            logger.error(f"OS error during MQTT loop: {os_error}")
+            mqtt_client.reconnect()
         except MQTT.MMQTTException as mqtt_exception:
             logger.error(f"MQTT error: {mqtt_exception}")
             mqtt_client.reconnect()
@@ -576,7 +582,7 @@ def handle_table_state(
     table_state_val,
     user_data,
     mqtt_client,
-    topic,
+    mqtt_topic,
 ):
     """
     change the image based on table state duration
@@ -611,8 +617,10 @@ def handle_table_state(
             user_data.get("annotation_sent") // 1_000_000_000
             < time.monotonic_ns() // 1_000_000_000 - table_state_duration
         ):
-            mqtt_client.publish(
-                topic, json.dumps({"annotation": True, "tags": ["table_duration"]})
+            mqtt_publish_robust(
+                mqtt_client,
+                mqtt_topic,
+                json.dumps({"annotation": True, "tags": ["table_duration"]}),
             )
             user_data["annotation_sent"] = time.monotonic_ns()
     else:
@@ -621,7 +629,7 @@ def handle_table_state(
     display_icon(display, image_tile_grid, icon_path)
 
 
-def handle_distance(distance, distance_threshold, mqtt_client) -> str:
+def handle_distance(distance, distance_threshold, mqtt_client, mqtt_topic) -> str:
     """
     publish distance to MQTT, determine the state based on threshold
     :return: new table state value ("up" or "down")
@@ -635,21 +643,7 @@ def handle_distance(distance, distance_threshold, mqtt_client) -> str:
         table_state_val = "down"
     logger.debug(f"distance: {distance} cm (table {table_state_val})")
 
-    try:
-        # If the publish() fails with one of the exceptions below,
-        # reconnect will be attempted. The reconnect() will try number of times,
-        # so there is no point retrying here. The message to be published
-        # is not important anyway.
-        mqtt_client.publish(
-            secrets.get(MQTT_TOPIC),
-            json.dumps({"distance": distance}),
-        )
-    except OSError as os_error:
-        logger.error(f"failed to publish MQTT message: {os_error}")
-        mqtt_client.reconnect()
-    except MQTT.MMQTTException as mqtt_exception:
-        logger.error(f"failed to publish MQTT message: {mqtt_exception}")
-        mqtt_client.reconnect()
+    mqtt_publish_robust(mqtt_client, mqtt_topic, json.dumps({"distance": distance}))
 
     return table_state_val
 
