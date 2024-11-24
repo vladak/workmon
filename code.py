@@ -159,7 +159,7 @@ def can_blink(blinker, color):
     return has_priority(blinker.color, color)
 
 
-# pylint: disable=too-many-locals,too-many-branches,too-many-arguments
+# pylint: disable=too-many-locals,too-many-branches,too-many-arguments,too-many-positional-arguments
 def refresh_text(
     co2_value_area,
     temp_area,
@@ -520,7 +520,7 @@ def main():
             mqtt_client.loop(mqtt_loop_timeout)
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def handle_power(
     blinker,
     display,
@@ -573,7 +573,7 @@ def handle_power(
         blinker.set_blinking(False, BLUE)
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def handle_table_state(
     blinker,
     display,

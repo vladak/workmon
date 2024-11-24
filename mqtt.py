@@ -42,7 +42,7 @@ def publish(mqtt_client, userdata, topic, pid):
     logger.info(f"Published to {topic} with PID {pid}")
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def mqtt_client_setup(pool, broker, port, log_level, user_data=None, socket_timeout=1):
     """
     Set up a MiniMQTT Client
