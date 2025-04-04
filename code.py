@@ -450,8 +450,8 @@ def main():
     table_state_val = None
     while True:
         button_values = [b.pressed for b in buttons]
-        logger.debug(f"button pressed: {button_values}")
         if True in button_values:
+            logger.debug(f"button pressed: {button_values}")
             button_pressed_stamp = time.monotonic_ns() // 1_000_000_000
 
         #
