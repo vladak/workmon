@@ -69,6 +69,8 @@ LAST_UPDATE_THRESH = "last_update_threshold"
 CO2_THRESH = "co2_threshold"
 TABLE_STATE_DUR_THRESH = "table_state_dur_threshold"
 FONT_FILE_NAME = "font_file_name"
+NTP_SERVER = "ntp_server"
+TZ_OFFSET = "tz_offset"
 
 MANDATORY_SECRETS = [
     BROKER,
@@ -349,8 +351,14 @@ def main():
     # The code is supposed to be running in specific time zone
     # with NTP server running on the default router.
     # Use minimum socket timeout (its type is int) to allow for tight loop.
+    ntp_server = secrets.get(NTP_SERVER)
+    if ntp_server is None:
+        ntp_server = str(wifi.radio.ipv4_gateway)
+    tz_offset = secrets.get(TZ_OFFSET)
+    if tz_offset is None:
+        tz_offset = 1
     ntp = adafruit_ntp.NTP(
-        pool, server=str(wifi.radio.ipv4_gateway), tz_offset=1, socket_timeout=1
+        pool, server=ntp_server, tz_offset=tz_offset, socket_timeout=1
     )
 
     logger.debug("setting up US100")
