@@ -120,7 +120,32 @@ Perform the following setup on the **Grafana server**:
 
 ## Configure
 
-The `secrets.py` should look like this:
+Here is list of tunables. Most of these are mandatory.
+
+Purpose | Name
+---|---
+`ntp_server` | hostname or IP address of NTP server. If left not configured, the default router will be used.
+`tz_offset` | time zone offset, default 1.
+`SSID` | WiFi SSID
+`password` | WiFi password
+`broker`  | MQTT broker IP address
+`broker_port` | MQTT broker port
+`log_level` | log level (e.g. "info" or "debug")
+`mqtt_topic_env` | MQTT topic to subscribe for environmental metrics
+`mqtt_topic_power` | MQTT topic to subscribe for power state of the display
+`mqtt_topic` | MQTT topic to publish data to (e.g. table state)
+`distance_threshold` | threshold for table distance from the ground (to infer whether table is up or down), in centimeters
+`power_threshold_watts` | threshold for the power consumption of the display (to infer whether the display is on or off), in Watts
+`co2_threshold` | CO2 threshold for alerting, in PPM
+`last_update_threshold` | when no data is received within this threshold, display N/A, in seconds
+`break_threshold_seconds` | if the display is considered to be on for more than this time duration, make an alert, in seconds
+`icon_paths` | paths to the icon files (array of 2 paths - the first is the default, the second is displayed when the table has been in given state for more than the threshold below)
+`table_state_dur_threshold` | the duration for table alerting, in seconds
+`start_hr` | hour (24 hr format) after which the TFT display should be on (inclusive)
+`end_hr` | hour (24 hr format) after which the TFT display should be off (exclusive)
+`font_file_name` | path to the font file
+
+Example `secrets.py` configuration:
 
 ```python
 secrets = {
