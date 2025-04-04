@@ -480,9 +480,6 @@ def main():
             )
             distance_stamp = time.monotonic_ns()
 
-        for b in buttons:
-            b.update()
-
         #
         # Leave the display on during certain hours unless a button is pressed.
         # Then leave it on for a minute.
@@ -532,9 +529,6 @@ def main():
             user_data[TABLE_STATE_DURATION] = None
 
             blinker.set_blinking(False)
-
-        for b in buttons:
-            b.update()
 
         try:
             mqtt_client.loop(mqtt_loop_timeout)
