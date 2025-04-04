@@ -348,7 +348,10 @@ def main():
     logger.debug("setting NTP up")
     # The code is supposed to be running in specific time zone
     # with NTP server running on the default router.
-    ntp = adafruit_ntp.NTP(pool, server=str(wifi.radio.ipv4_gateway), tz_offset=1)
+    # Use minimum socket timeout (its type is int) to allow for tight loop.
+    ntp = adafruit_ntp.NTP(
+        pool, server=str(wifi.radio.ipv4_gateway), tz_offset=1, socket_timeout=1
+    )
 
     logger.debug("setting up US100")
     uart = busio.UART(board.TX, board.RX, baudrate=9600)
