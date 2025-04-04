@@ -443,6 +443,7 @@ def main():
         button = Button(pin, pull)
         buttons.append(button)
     button_pressed_stamp = 0
+    display_update_stamp = time.monotonic_ns() // 1_000_000_000 - 1
 
     distance_stamp = 0
     logger.debug("entering main loop")
@@ -478,30 +479,37 @@ def main():
             start_hr <= cur_hr < end_hr
             or button_pressed_stamp >= time.monotonic_ns() // 1_000_000_000 - 60
         ):
-            display.brightness = 1
-            refresh_text(
-                co2_value_area,
-                temp_area,
-                hum_area,
-                tbl_area,
-                user_data,
-                secrets.get(LAST_UPDATE_THRESH),
-                secrets.get(CO2_THRESH),
-                blinker,
-            )
-            logger.debug(f"user data = {user_data}")
+            #
+            # Update the display only once a second to increase the probability
+            # of capturing button presses.
+            #
+            if display_update_stamp <= time.monotonic_ns() // 1_000_000_000 - 1:
+                display.brightness = 1
+                refresh_text(
+                    co2_value_area,
+                    temp_area,
+                    hum_area,
+                    tbl_area,
+                    user_data,
+                    secrets.get(LAST_UPDATE_THRESH),
+                    secrets.get(CO2_THRESH),
+                    blinker,
+                )
+                logger.debug(f"user data = {user_data}")
 
-            handle_power(
-                blinker,
-                display,
-                image_tile_grid,
-                table_state,
-                table_state_val,
-                power_state,
-                user_data,
-                mqtt_client,
-                mqtt_topic,
-            )
+                handle_power(
+                    blinker,
+                    display,
+                    image_tile_grid,
+                    table_state,
+                    table_state_val,
+                    power_state,
+                    user_data,
+                    mqtt_client,
+                    mqtt_topic,
+                )
+
+                display_update_stamp = time.monotonic_ns() // 1_000_000_000
         else:
             logger.debug("outside of working hours, setting the display off")
             display.brightness = 0
