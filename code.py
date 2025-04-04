@@ -480,7 +480,7 @@ def main():
             or button_pressed_stamp >= time.monotonic_ns() // 1_000_000_000 - 60
         ):
             #
-            # Update the display only once a second to increase the probability
+            # Update the display/blinker only once a second to increase the probability
             # of capturing button presses.
             #
             if display_update_stamp <= time.monotonic_ns() // 1_000_000_000 - 1:
