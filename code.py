@@ -34,13 +34,13 @@ from mqtt import mqtt_client_setup, mqtt_publish_robust
 from timeutil import get_time
 
 # For storing import exceptions so that they can be raised from main().
-IMPORT_EXCEPTION = None
+IMPORT_EXCEPTION = None  # pylint: disable=invalid-name
 
 try:
     import wifi
 except MemoryError as e:
     # Let this fall through to main() so that appropriate reset can be performed.
-    IMPORT_EXCEPTION = e
+    IMPORT_EXCEPTION = e  # pylint: disable=invalid-name
 
 try:
     from secrets import secrets
