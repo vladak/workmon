@@ -8,8 +8,6 @@ on:
       - .github/workflows/python-checks.yml
       - pylintrc
       - .isort.cfg
-  schedule:
-  - cron: "0 0 * * 0"
 
 jobs:
   checks:
