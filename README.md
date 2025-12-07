@@ -75,9 +75,12 @@ The code assumes there is NTP server running and responding on the default IPv4 
 
 ### TP-link P110
 
-Install the Tapo app on a mobile phone. Register new account, remember the user ID and password as these will be necessary.
+Install the Tapo app on a mobile phone. Register new account, remember the user ID and password as these will be necessary. Allow third-party API access within the app.
+This is necessary to get the current power reading via API working.
 
-Setup the plug so that it connects to dedicated (IoT) WiFi network with static IP address.
+Setup the plug so that it connects to dedicated (IoT) WiFi network with IP address staticly assigned via DHCP. This is needed to be able to read the power consumption
+values using the same host/IP hard-coded in the configuration.
+
 Set up and configure https://github.com/vladak/plug2mqtt/ somewhere on the IoT network (say on a Raspberry Pi) to publish the state of the plug, notably the power consumption.
 
 ### Feather
