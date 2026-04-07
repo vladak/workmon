@@ -324,6 +324,7 @@ def main():
     logger = logging.getLogger(__name__)
     logger.setLevel(log_level)
 
+    # pylint: disable=no-member
     pixel = neopixel.NeoPixel(board.NEOPIXEL, 1)
     blinker = Blinker(pixel)
 
