@@ -7,7 +7,8 @@ import microcontroller
 # pylint: disable=import-error
 import supervisor
 
-if supervisor.runtime.safe_mode_reason == supervisor.SafeModeReason.HARD_FAULT:
+reason = supervisor.runtime.safe_mode_reason
+if reason == supervisor.SafeModeReason.HARD_FAULT:
     # pylint: disable=no-member
     microcontroller.reset()  # Reset and start over.
 elif reason == supervisor.SafeModeReason.WATCHDOG:
