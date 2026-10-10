@@ -13,7 +13,7 @@ class Blinker:
     Encapsulates a method to blink a neopixel from within a tight loop.
 
     The class is not ready to be used in multiple instances for the same neopixel.
-    Assumes that update() will be called more frequently than the value of the duration parameter.
+    Assumes that set_blinking() will be called more frequently than the value of the duration parameter.
 
     Not thread safe.
     """
